@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   checkPageButton.addEventListener('click', function() {
      
      chrome.tabs.executeScript({
-    	file: 'myscript.js'
+    	file: 'frontend.js'
   	}); 
      
     //});
