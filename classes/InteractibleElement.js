@@ -1,7 +1,7 @@
 class InteractibleElement extends Element {
 
-    constructor(type) {
-        super.constructor();
+    constructor(docElement, uniqueId, type) {
+        super(docElement, uniqueId);
         this.type = type;
     }
 
