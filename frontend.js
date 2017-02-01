@@ -41,7 +41,28 @@ function retrieveElements(){
 	for (var i = 0; i < elements.length; i++){
 
 		switch ((elements[i].tagName).toLowerCase()){
-			
+
+			//ToDo: typecast to element objects and then have delegation methods for each type of parsing
+			// Example:
+			// elements[i] = new Element();
+            //
+			// basicElements(); //button, links, input, etc //intuitive UI things
+			// xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
+            // angularStuff(); //ngClick
+            // jquery(); //?
+            // javascript(); //onClick //odd uses, e.g. apply method post click to change page
+
+			//long term: inject css to highlight/label items analyzed
+
+			//checkboxes more in-depth for enabling elements
+					//all checked by default
+				//quality of life
+					//select/deselect all
+					//other category for random objects
+				//extra
+					//save selections (cookie?)
+					//error checking
+
 			case "button":
 				var buttonId = elements[i].getAttribute("id");
      			var buttonName = elements[i].getAttribute("name");
@@ -62,5 +83,3 @@ function retrieveElements(){
 		}
 	}
 }
-	
-
