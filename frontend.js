@@ -1,4 +1,15 @@
 // Script that runs on the current tab enviroment.
+
+var outputCheckboxes = [];
+
+chrome.runtime.onMessage.addListener(getMessage);
+
+//Get checkboxes from popup.js
+function getMessage(message){
+    outputCheckboxes = message.outputCheckboxes;    
+    console.log("Frontend checkbox array length: "+outputCheckboxes.length);
+    chrome.runtime.onMessage.removeListener(getMessage);
+}
 	
 var outputData = "";
 
@@ -14,6 +25,10 @@ outputData += "Page title: " + document.title;
 outputData += "\n-----------------------------------\n";
 
 retrieveElements();
+
+//Send the output data to the background script enviroment though Chrome API message.	
+chrome.runtime.sendMessage({outputData:outputData});
+//chrome.runtime.sendMessage({outputCheckboxes:outputCheckboxes});
 
 /**
  * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
@@ -48,5 +63,4 @@ function retrieveElements(){
 	}
 }
 	
-//Send the output data to the background script enviroment though Chrome API message.	
-chrome.runtime.sendMessage(outputData);
+

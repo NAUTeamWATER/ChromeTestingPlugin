@@ -1,9 +1,14 @@
 // The extension background enviroment as specified in the manifest.
 
 // Retrieve the message sent from popup.js and alert the response.
-chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
-	var blob = new Blob([response], {type: 'text/plain'});
+	//var outputCheckboxes = [];
+    //outputCheckboxes = message.outputCheckboxes;
+    //console.log("Length of checkbox array: "+outputCheckboxes.length);
+    //console.log(outputCheckboxes[0]);
+
+	var blob = new Blob([message.outputData], {type: 'text/plain'});
 	console.log("Created Blob object.");
 	
 	objectURL = URL.createObjectURL(blob);

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Capstone Extension Feasibility Test",
-  "description": "Just testing out Chome extensions for capstone!",
+  "name": "Capstone Team W.A.T.E.R Extension",
+  "description": "Capstone Team W.A.T.E.R Extension is under development.",
   "version": "1.0",
 
   "icons": {
