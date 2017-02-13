@@ -1,4 +1,8 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
+
+/**
+ * Wrapper class for DOM elements that contains a UUID (unique ID), as well as fields and helper methods.
+ */
 class Element {
 
     //no constructor overloading, hence the setData() method
@@ -7,7 +11,7 @@ class Element {
         this.uniqueID = uniqueID;
         this.parsed = false;
 
-        //ToDo: keep basics or not and delegate to helper methods?
+        //ToDo: keep basic values here as fields or delegate to helper methods?
         this.name = null;
         this.id = null;
         this.xpath = null;
@@ -20,15 +24,24 @@ class Element {
         this.xpath = xPath;
     }
 
-    //ToDo: reference to the element id or something unique so it can tell if it has been modified before
+    /**
+     * To allow checking of parsing status to know if it has been analyzed already
+     */
     setParsed() {
         if (!this.parsed) this.parsed = true;
     }
 
-    getParsedAlready() {
+    /**
+     * To allow checking of parsing status to know if it has been analyzed already
+     * @returns {boolean} - this.parsed
+     */
+    isParsedAlready() {
         return this.parsed;
     }
 
+    /**
+     * Helper method for simple stringification
+     */
     toString(){
         //ToDo
     }

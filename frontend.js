@@ -16,19 +16,6 @@ outputData += "\n-----------------------------------\n";
 parseElements(retrieveElements());
 
 /**
- * Creates a random UUID for the element to know it is unique
- */
-var PseudoGuid = new (function() {
-    this.empty = "00000000-0000-0000-0000-000000000000";
-    this.GetNew = function() {
-        var fourChars = function() {
-            return (((1 + Math.random()) * 0x10000)|0).toString(16).substring(1).toUpperCase();
-        }
-        return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
-    };
-})();
-
-/**
  * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
  * !! Will take an array as input and populates the given array with element objects. !!
  */
@@ -40,14 +27,26 @@ function retrieveElements(){
 
 	var elementArray = [];
 
-	//loop through all elements
-	for (var i = 0; i < elements.length; i++) {
+    //random IDs
+    var uuid = function () {
+        var fourChars = function () {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1).toUpperCase();
+        };
+        return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
+    };
+
+    //loop through all elements
+    for (var i = 0; i < elements.length; i++) {
 		//add a new Element type to the array
-		elementArray.push(new Element(elements[i], PseudoGuid.GetNew()));
+		elementArray.push(new Element(elements[i], uuid()));
 	}
+
 }
 
 function parseElements(elementArray){
+
+    //if (!elementArray[i].isParsedAlready())
+
     // basicElements(); //button, links, input, etc //intuitive UI things
     // xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
     // angularStuff(); //ngClick
