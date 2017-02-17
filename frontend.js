@@ -1,72 +1,66 @@
-// Script that runs on the current tab enviroment.
+//For use of background page console! Usage: bkg.console.log('message!');
+var bkg = chrome.extension.getBackgroundPage();
 
-var outputCheckboxes = [];
+//After the DOM is loaded, add a button listener.
+//Call the script that runs on the current tab enviroment.
 
-chrome.runtime.onMessage.addListener(getMessage);
+document.addEventListener('DOMContentLoaded', function() {
+    var checkPageButton = document.getElementById('checkPage');
+    checkPageButton.addEventListener('click', function() {
 
-//Get checkboxes from popup.js
-function getMessage(message){
-    outputCheckboxes = message.outputCheckboxes;    
-    console.log("Frontend checkbox array length: "+outputCheckboxes.length);
-    chrome.runtime.onMessage.removeListener(getMessage);
-}
-	
-var outputData = "";
+        //Get user checkbox data;
+        var checkboxData = checkboxHandler();
 
-var timeStamp = new Date();
 
-//Pull The page title.
-var pageURL = window.location.href;
-console.log(pageURL);
+        if (checkboxData[0].length <= 0) {
+            //Feedback that a output type must be selected, if not send user feedback to popup window.
+            //JOHN implement this betters (:
+            document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
+        } else {
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function(tabs) {
+                chrome.tabs.executeScript(tabs[0].id, {
+                    file: 'middleware.js'
+                }, function() {
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        checkboxData: checkboxData
+                    });
+                });
+            });
+        }
 
-outputData +=  "Webpage elements retrieved from: " + pageURL+"\n";	
-outputData += "at: "+ timeStamp +"\n";
-outputData += "Page title: " + document.title;
-outputData += "\n-----------------------------------\n";
+    }, false);
+}, false);
 
-parseElements(retrieveElements());
+// For JASON to work on :P
+// I made a single function to get both kinds of checkboxes, (file output types and element types)
+//This can be made into 2 if you desire, just note having a SINGLE array to use in the chrome message is important.
+//Please keep files in index 0 and elements in index 1 of this array as well as this order matters in the middleware.
+//Also the console logs were for intial testing purposes, you can remove them or comment them out.
+function checkboxHandler() {
+    var outputFileCheckboxes = [];
+    var elementsToBeParsedCheckboxes = [];
+    var checkboxData = [];
 
-//Send the output data to the background script enviroment though Chrome API message.	
-chrome.runtime.sendMessage({outputData:outputData});
-//chrome.runtime.sendMessage({outputCheckboxes:outputCheckboxes});
+    if (document.getElementById('checkbox_xml').checked) {
+        outputFileCheckboxes.push('xml');
+        bkg.console.log('xml checked');
+    }
+    if (document.getElementById('checkbox_selenium').checked) {
+        outputFileCheckboxes.push('selenium');
+        bkg.console.log('selenium checked');
+    }
+    if (document.getElementById('checkbox_jasmine').checked) {
+        outputFileCheckboxes.push('jasmine');
+        bkg.console.log('jasmine checked');
+    }
 
-/**
- * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
- * !! Will take an array as input and populates the given array with element objects. !!
- */
-function retrieveElements(){
+    //Construct single array for Chrome messaging.
+    checkboxData[0] = outputFileCheckboxes;
+    checkboxData[1] = elementsToBeParsedCheckboxes;
 
-    //ToDo: if statements for toggling which elements to access
-	var elements = document.getElementsByTagName("*");
-	console.log("Found " +elements.length+" elements.");
+    return checkboxData;
 
-	var elementArray = [];
-
-    //random IDs
-    var uuid = function () {
-        var fourChars = function () {
-            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1).toUpperCase();
-        };
-        return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
-    };
-
-    //loop through all elements
-    for (var i = 0; i < elements.length; i++) {
-		//add a new Element type to the array
-		elementArray.push(new Element(elements[i], uuid()));
-	}
-
-}
-
-function parseElements(elementArray){
-
-    //if (!elementArray[i].isParsedAlready())
-
-    // basicElements(); //button, links, input, etc //intuitive UI things
-    // xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
-    // angularStuff(); //ngClick
-    // jquery(); //?
-    // javascript(); //onClick //odd uses, e.g. apply method post click to change page
-
-	//something to pass to sendMessage()
 }
