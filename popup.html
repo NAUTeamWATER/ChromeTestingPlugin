@@ -1,25 +1,53 @@
-<!doctype html>
-
-<!--
-The HTML for the popup box. Note: only external javascript files should linked here.
-We can add css styling and HTML elements.
--->
-
+<!DOCTYPE html>
 <html>
 
-<head>
+  <head>
+    <link rel="stylesheet" href="popup.css">
     <title>Capstone test</title>
-    <script src="frontend.js"></script>
-</head>
+    <script src="popup.js"></script>
 
-<body>
-    <h3>Capstone test</h3>
-    <div><input type="checkbox" checked="checked" id="checkbox_xml"> XML</div>
-    <div><input type="checkbox" id="checkbox_selenium"> Selenium(.java)</div>
-    <div><input type="checkbox" id="checkbox_jasmine"> Jasmine(.js)</div>
-    <div id="feedback"> </div>
+  </head>
+  <body>
+    <div>
+    <h1> File Output: </h1>
 
-    <button id="checkPage">Get HTML!</button>
-</body>
+    <form action="">
+    <input type="checkbox" name="file" value="xml">XML<br>
+    <input type="checkbox" name="file" value="selenium">Selenium(.java)<br>
+    <input type="checkbox" name="file" value="jasmine">Jasmine(.js)<br>
+    </form>
+    <br>
+    <button id="checkPage">Get HTML</button>
+    <br>
+    <br>
+    <hr class="lineborder">
+  </div>
 
+    <div>
+
+    <input type="checkbox" class="read-more-state" id="post-2" />
+
+    <ul class="read-more-wrap">
+
+          <button id = "select" class= "read-more-target" onClick="selectAll();">Select All</button>
+          <button id = "select" class= "read-more-target" onClick="unselectAll();">Unselect All</button>
+          <form action="">
+
+          <select class="read-more-target" name="elements" multiple>
+            <option class="read-more-target" value="dropdown"> Dropdowns </option>
+            <option class="read-more-target" value="radiobutton"> Radio Buttons </option>
+            <option class="read-more-target" value="hyperlink"> Hyperlinks </option>
+            <option class="read-more-target" value="checkbox"> Checkboxes </option>
+            <option class="read-more-target" value="textfield"> Textfields </option>
+            <option class="read-more-target" value="other"> Other </option>
+          </select>
+
+            <!--<input type="submit">-->
+    </form>
+      </ul>
+
+      <label for="post-2" class="read-more-trigger"></label>
+    </div>
+
+  </body>
 </html>
