@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //Get user checkbox data;
         var checkboxData = checkboxHandler();
-
+        //var checkboxData = [];
 
         if (checkboxData[0].length <= 0) {
             //Feedback that a output type must be selected, if not send user feedback to popup window.
@@ -95,7 +95,7 @@ function checkboxHandler() {
         outputFileCheckboxes.push('xml');
         bkg.console.log('xml checked');
     }
-    if (document.getElementById('fileputput_selenium').checked) {
+    if (document.getElementById('fileoutput_selenium').checked) {
         outputFileCheckboxes.push('selenium');
         bkg.console.log('selenium checked');
     }
