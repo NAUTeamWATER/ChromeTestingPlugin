@@ -7,9 +7,10 @@ var elementObjects = []; //Will eventually be an array of objects...
 
 
 //All code that runs in the middleware needs to be in this Listener function.
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
 
     function(message, sender, sendResponse) {
+console.log("here");
 
         if (message.checkboxData) {
             //Read message and assign passed in data from the frontend.

@@ -17,16 +17,18 @@ checkPageButton.addEventListener('click', function() {
         //JOHN implement this betters (:
         document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
     } else {
+
         chrome.tabs.query({
             active: true,
             currentWindow: true
         }, function(tabs) {
-            chrome.tabs.executeScript(tabs[0].id, {
-                file: 'middleware.js'
-            }, function() {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    checkboxData: checkboxData
-                });
+            //chrome.tabs.executeScript(tabs[0].id, {
+            //      file: 'middleware.js'
+            //  }, function() {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                checkboxData: checkboxData
+            }, function(response) {
+                //Response code here...
             });
         });
     }
