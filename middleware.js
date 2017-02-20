@@ -5,8 +5,10 @@ var elementsToBeParsedCheckboxes = [];
 var outputFileCheckboxes = [];
 var elementObjects = []; //Will eventually be an array of objects...
 
+
 //All code that runs in the middleware needs to be in this Listener function.
-chrome.runtime.onMessage.addListener(
+chrome.extension.onMessage.addListener(
+
     function(message, sender, sendResponse) {
 
         if (message.checkboxData) {
@@ -40,7 +42,7 @@ function createOutputFileHeader() {
 
     //Pull The page title.
     var pageURL = window.location.href;
-    console.log(pageURL);
+    //console.log(pageURL);
 
     outputFileHeader += "Webpage elements retrieved from: " + pageURL + "\n";
     outputFileHeader += "at: " + timeStamp + "\n";

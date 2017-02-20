@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(function(
     //For testing purposes:
     //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
     //console.log(outputFileCheckboxes[0]);
-
+    console.log(outputFileCheckboxes.length);
     var blob = new Blob([outputFileHeader], {
         type: 'text/plain'
     });

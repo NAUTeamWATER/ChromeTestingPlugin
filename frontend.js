@@ -4,35 +4,37 @@ var bkg = chrome.extension.getBackgroundPage();
 //After the DOM is loaded, add a button listener.
 //Call the script that runs on the current tab enviroment.
 
-document.addEventListener('DOMContentLoaded', function() {
-    var checkPageButton = document.getElementById('checkPage');
-    checkPageButton.addEventListener('click', function() {
 
-        //Get user checkbox data;
-        var checkboxData = checkboxHandler();
-        //var checkboxData = [];
+var checkPageButton = document.getElementById('checkPage');
+checkPageButton.addEventListener('click', function() {
 
-        if (checkboxData[0].length <= 0) {
-            //Feedback that a output type must be selected, if not send user feedback to popup window.
-            //JOHN implement this betters (:
-            document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
-        } else {
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function(tabs) {
-                chrome.tabs.executeScript(tabs[0].id, {
-                    file: 'middleware.js'
-                }, function() {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        checkboxData: checkboxData
-                    });
+    //Get user checkbox data;
+    var checkboxData = checkboxHandler();
+    bkg.console.log(checkboxData[0].length);
+
+    if (checkboxData[0].length <= 0) {
+        //Feedback that a output type must be selected, if not send user feedback to popup window.
+        //JOHN implement this betters (:
+        document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
+    } else {
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function(tabs) {
+            chrome.tabs.executeScript(tabs[0].id, {
+                file: 'middleware.js'
+            }, function() {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    checkboxData: checkboxData
                 });
             });
-        }
+        });
+    }
 
-    }, false); //Button listener
+}, false); //Button listener
 
+
+document.addEventListener('DOMContentLoaded', function() {
     //HTML JS for user interface//
 
     var acc = document.getElementsByClassName("accordion");
@@ -91,17 +93,13 @@ function checkboxHandler() {
     var elementsToBeParsedCheckboxes = [];
     var checkboxData = [];
 
-    if (document.getElementById('fileoutput_xml').checked) {
-        outputFileCheckboxes.push('xml');
-        bkg.console.log('xml checked');
-    }
-    if (document.getElementById('fileoutput_selenium').checked) {
-        outputFileCheckboxes.push('selenium');
-        bkg.console.log('selenium checked');
-    }
-    if (document.getElementById('fileoutput_jasmine').checked) {
-        outputFileCheckboxes.push('jasmine');
-        bkg.console.log('jasmine checked');
+
+    var getFileOutputs = document.getElementsByClassName("output_checkbox");
+    for (var i = 0, max = getFileOutputs.length; i < max; i++) {
+        if (getFileOutputs[i].checked) {
+            bkg.console.log(getFileOutputs[i].id);
+            outputFileCheckboxes.push(getFileOutputs[i].id);
+        }
     }
 
     //Construct single array for Chrome messaging.
