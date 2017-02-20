@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    //Check all elements
+    var getInputs = document.getElementsByClassName("element_checkbox");
+    for (var i = 0, max = getInputs.length; i < max; i++) {
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
+    }
+
 }, false); //DOMContentLoaded Listener
 
 
