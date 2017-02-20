@@ -50,9 +50,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Checks all checkboxes
+    // Needs to be put into a function for toggling button
     var getInputs = document.getElementsByTagName("input");
     for (var i = 0, max = getInputs.length; i < max; i++) {
-
         if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
     }
 
