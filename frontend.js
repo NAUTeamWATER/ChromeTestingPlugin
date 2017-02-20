@@ -86,30 +86,26 @@ document.getElementById('unselectAll').addEventListener('click', unselectAll);
 
 
 //Should pull all file types and elements meant to be parsed.
-//Going to reconfig so that it is all done in one function and no repeat of code.
 //Please keep files in index 0 and elements in index 1 of this array as well as this order matters in the middleware.
 //Also the console logs were for intial testing purposes, you can remove them or comment them out.
+function checkboxintoarray(input, output){
+	for (var i = 0, max = input.length; i < max; i++) {
+        if (input[i].checked) {
+            output.push(input[i].id);
+        }
+    }		
+}
+
 function checkboxHandler() {
     var outputFileCheckboxes = [];
     var elementsToBeParsedCheckboxes = [];
     var checkboxData = [];
 
-
-    var getFileOutputs = document.getElementsByClassName("output_checkbox");
-    for (var i = 0, max = getFileOutputs.length; i < max; i++) {
-        if (getFileOutputs[i].checked) {
-            //bkg.console.log(getFileOutputs[i].id);
-            outputFileCheckboxes.push(getFileOutputs[i].id);
-        }
-    }	
+    var getFileOutputs = document.getElementsByClassName("output_checkbox");	
 	var getElementTypes = document.getElementsByClassName("element_checkbox");
-    for (var i = 0, max = getElementTypes.length; i < max; i++) {
-        if (getElementTypes[i].checked) {			
-            //bkg.console.log(getElementTypes[i].id);
-            elementsToBeParsedCheckboxes.push(getElementTypes[i].id);
-        }
-    }
-	alert(elementsToBeParsedCheckboxes);
+	
+	checkboxintoarray(getFileOutputs , outputFileCheckboxes );
+	checkboxintoarray(getElementTypes , elementsToBeParsedCheckboxes );
 
     //Construct single array for Chrome messaging.
     checkboxData[0] = outputFileCheckboxes;
