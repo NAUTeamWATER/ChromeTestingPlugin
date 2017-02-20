@@ -1,6 +1,6 @@
 body{
   width: 369px;
-  height: 220px;
+  height: 320px;
 }
 
 button.accordion {
@@ -47,7 +47,7 @@ button {
   border: none;
   color: #FFFFFF;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   padding: 10px;
   width: 120px;
   transition: all 0.5s;
@@ -76,9 +76,9 @@ button:hover {
   border: none;
   color: #FFFFFF;
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   padding: 10px;
-  width: 130px;
+  width: 148px;
   transition: all 0.5s;
   cursor: pointer;
   margin: 5px;
@@ -92,12 +92,12 @@ button:hover {
 }
 
 #checkPage span:after {
-  font-size: 12px;
+  font-size: 16px;
   content: '\27AA';
   position: static;
   opacity: 0;
   top: 0;
-  right: -20px;
+  right: -30px;
   transition: 0.5s;
 }
 
@@ -109,3 +109,6 @@ button:hover {
   opacity: 1;
   right: 0;
 }
+
+/*W.A.T.E.R*/
+h1 { color: #000000; font-family: 'Helvetica Neue', sans-serif; font-size: 25px; font-weight: bold; letter-spacing: -1px; line-height: 1; text-align: center; }
