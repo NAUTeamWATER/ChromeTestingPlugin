@@ -10,7 +10,7 @@ var elementObjects = []; //Will eventually be an array of objects...
 chrome.runtime.onMessage.addListener(
 
     function(message, sender, sendResponse) {
-console.log("here");
+        console.log("here");
 
         if (message.checkboxData) {
             //Read message and assign passed in data from the frontend.
