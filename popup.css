@@ -110,5 +110,14 @@ button:hover {
   right: 0;
 }
 
+p {
+    color: #D8000C;
+    text-align: center;
+    background-image: url("error.png");
+    background-position: 20% 20%;
+    background-repeat: no-repeat;
+
+}
+
 /*W.A.T.E.R*/
 h1 { color: #000000; font-family: 'Helvetica Neue', sans-serif; font-size: 25px; font-weight: bold; letter-spacing: -1px; line-height: 1; text-align: center; }
