@@ -18,11 +18,11 @@ button.accordion {
 
 button.accordion.active, button.accordion:hover {
     background-color: #ddd;
+    color: #f4511e;
 }
 
 button.accordion:after {
     content: '\002B';
-    color: #777;
     font-weight: bold;
     float: right;
     margin-left: 5px;
@@ -38,4 +38,74 @@ div.panel {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+button {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  width: 120px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+button {
+    background-color: white;
+    color: black;
+
+}
+
+button:hover {
+    background-color: #f4511e;
+    color: white;
+}
+
+
+
+/*Get HTML BUTTON*/
+#checkPage {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  width: 130px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+#checkPage span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+#checkPage span:after {
+  font-size: 12px;
+  content: '\27AA';
+  position: static;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+#checkPage:hover span {
+  padding-right: 40px;
+}
+
+#checkPage:hover span:after {
+  opacity: 1;
+  right: 0;
 }
