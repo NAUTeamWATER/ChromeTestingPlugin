@@ -50,16 +50,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Checks all checkboxes
-    // Needs to be put into a function for toggling button
+}, false); //DOMContentLoaded Listener
+
+
+
+/* Two functions that selects or unselects
+all of the checkboxes for the elements */
+function selectAll() {
     var getInputs = document.getElementsByClassName("element_checkbox");
     for (var i = 0, max = getInputs.length; i < max; i++) {
         if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
     }
+}
 
+document.getElementById('selectAll').addEventListener('click', selectAll);
 
+function unselectAll() {
+    var getInputs = document.getElementsByClassName("element_checkbox");
+    for (var i = 0, max = getInputs.length; i < max; i++) {
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = false;
+    }
+}
 
-}, false); //DOMContentLoaded Listener
+document.getElementById('unselectAll').addEventListener('click', unselectAll);
 
 
 // For JASON to work on :P
