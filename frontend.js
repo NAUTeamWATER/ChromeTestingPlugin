@@ -31,8 +31,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-    }, false);
-}, false);
+    }, false); //Button listener
+
+    //HTML JS for user interface//
+
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].onclick = function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        }
+    }
+
+    var getInputs = document.getElementsByTagName("input");
+    for (var i = 0, max = getInputs.length; i < max; i++) {
+
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
+    }
+
+
+
+}, false); //DOMContentLoaded Listener
+
 
 // For JASON to work on :P
 // I made a single function to get both kinds of checkboxes, (file output types and element types)
@@ -44,15 +71,15 @@ function checkboxHandler() {
     var elementsToBeParsedCheckboxes = [];
     var checkboxData = [];
 
-    if (document.getElementById('checkbox_xml').checked) {
+    if (document.getElementById('fileoutput_xml').checked) {
         outputFileCheckboxes.push('xml');
         bkg.console.log('xml checked');
     }
-    if (document.getElementById('checkbox_selenium').checked) {
+    if (document.getElementById('fileputput_selenium').checked) {
         outputFileCheckboxes.push('selenium');
         bkg.console.log('selenium checked');
     }
-    if (document.getElementById('checkbox_jasmine').checked) {
+    if (document.getElementById('fileoutput_jasmine').checked) {
         outputFileCheckboxes.push('jasmine');
         bkg.console.log('jasmine checked');
     }
