@@ -16,14 +16,14 @@ chrome.runtime.onMessage.addListener(
             //Read message and assign passed in data from the frontend.
             elementsToBeParsedCheckboxes = message.checkboxData[1];
 
-
-            //parseElements(retrieveElements()); //This is bugged
+            // elementObjects = retrieveElements();
+            // elementObjects = parseElements(); //This is bugged
 
             //Construct data array to send to backend.
             var outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
-            outputArray[2] = elementObjects; //Call function to pull all elements. I.E. = getPageElements();
+            outputArray[2] = retrieveElements(); //Call function to pull all elements. I.E. = getPageElements();
 
             sendBackgroundData(outputArray);
         }
@@ -76,9 +76,16 @@ function retrieveElements() {
 
     //loop through all elements
     for (var i = 0; i < elements.length; i++) {
+
         //add a new Element type to the array
-        elementArray.push(new Element(elements[i], uuid()));
+        // var test = document.createElement(elements[i].tagName);
+        // var e = Element.constructor(elements[i], uuid()); //was buggy, may or may not be fixed now
+
+        var htmlCollection = elements[i];
+        elementArray.push(htmlCollection); //works w/ html collection, but is lost in sending the message
     }
+
+    return elementArray;
 
 }
 
@@ -86,11 +93,19 @@ function parseElements(elementArray) {
 
     //if (!elementArray[i].isParsedAlready())
 
-    // basicElements(); //button, links, input, etc //intuitive UI things
+    return getBasicElements(elementArray); //button, links, input, etc //intuitive UI things
     // xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
     // angularStuff(); //ngClick
     // jquery(); //?
     // javascript(); //onClick //odd uses, e.g. apply method post click to change page
 
     //something to pass to sendMessage()
+}
+
+//Wip, not really functional yet
+function getBasicElements(elementArray){
+    elementArray.forEach(function(element){
+        element.setData(element.doc_element.toString(), element.uniqueID, "xPath ToDo");
+    });
+    return elementArray;
 }

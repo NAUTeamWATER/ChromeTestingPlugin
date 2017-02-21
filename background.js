@@ -13,10 +13,33 @@ chrome.runtime.onMessage.addListener(function(
         elementObjects = message.outputArray[2];
     }
 
+    createTextFile(outputFileHeader, elementObjects);
+
+});
+
+//function for testing purposes
+function createTextFile(outputFileHeader, elementObjects) {
+
     //For testing purposes:
     //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
     //console.log(outputFileCheckboxes[0]);
     console.log(outputFileCheckboxes.length);
+
+    //Add elements to file (not working)
+    for (var i = 0; i < elementObjects.length; i++) {
+        var t3 = elementObjects[i]; //debug, gives Object, loses references
+        outputFileHeader += elementObjects[i].toString() + "\n "; //append to file
+    }
+
+    //Messing around with different loops
+    // elementObjects.forEach(function(element){
+    //     var test = element; //debugging
+    //     outputFileHeader += element.toString() + "\n";
+    // });
+
+    // Snippet I want to keep and research later(Max)
+    // var a = DOMParser(); var xml = "<node></node>"; xml = a.parseFromString(xml, "application/xml" ); xml.getElementsByTagName("node") + ""; //"[object HTMLCollection]"
+
     var blob = new Blob([outputFileHeader], {
         type: 'text/plain'
     });
@@ -26,8 +49,7 @@ chrome.runtime.onMessage.addListener(function(
     console.log("Made link from Blob object.");
 
     download(objectURL, "water_plugin_test.txt");
-
-});
+}
 
 // TODO: Function to take the element object array and sort it by element type.
 function sortElementObjects(elementObjects) {

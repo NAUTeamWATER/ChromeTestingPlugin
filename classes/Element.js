@@ -43,6 +43,7 @@ class Element {
      * Helper method for simple stringification
      */
     toString(){
+        return "Element "+"\nID: "+this.id+"\nName: "+this.name;
         //ToDo
     }
 
