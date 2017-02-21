@@ -10,14 +10,16 @@ checkPageButton.addEventListener('click', function() {
 
     //Get user checkbox data;
     var checkboxData = checkboxHandler();
-    bkg.console.log(checkboxData[0].length);
 
     if (checkboxData[0].length <= 0) {
         //Feedback that a output type must be selected, if not send user feedback to popup window.
-        //JOHN implement this betters (:
         document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
-    } else {
 
+    } else if (checkboxData[1].length <= 0){
+        document.getElementById('feedback').innerHTML = "<p>You must select an element!</p>";
+
+    } else {
+        document.getElementById('feedback').innerHTML = "";
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -86,14 +88,12 @@ document.getElementById('unselectAll').addEventListener('click', unselectAll);
 
 
 //Should pull all file types and elements meant to be parsed.
-//Please keep files in index 0 and elements in index 1 of this array as well as this order matters in the middleware.
-//Also the console logs were for intial testing purposes, you can remove them or comment them out.
 function checkboxintoarray(input, output){
 	for (var i = 0, max = input.length; i < max; i++) {
         if (input[i].checked) {
             output.push(input[i].id);
         }
-    }		
+    }
 }
 
 function checkboxHandler() {
@@ -101,9 +101,9 @@ function checkboxHandler() {
     var elementsToBeParsedCheckboxes = [];
     var checkboxData = [];
 
-    var getFileOutputs = document.getElementsByClassName("output_checkbox");	
+    var getFileOutputs = document.getElementsByClassName("output_checkbox");
 	var getElementTypes = document.getElementsByClassName("element_checkbox");
-	
+
 	checkboxintoarray(getFileOutputs , outputFileCheckboxes );
 	checkboxintoarray(getElementTypes , elementsToBeParsedCheckboxes );
 
