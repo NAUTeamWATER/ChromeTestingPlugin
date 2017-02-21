@@ -15,7 +15,7 @@ checkPageButton.addEventListener('click', function() {
         //Feedback that a output type must be selected, if not send user feedback to popup window.
         document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
 
-    } else if (checkboxData[1].length <= 0){
+    } else if (checkboxData[1].length <= 0) {
         document.getElementById('feedback').innerHTML = "<p>You must select an element!</p>";
 
     } else {
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //Check all elements
     var getInputs = document.getElementsByClassName("element_checkbox");
-    for (var i = 0, max = getInputs.length; i < max; i++) {
+    for (var i = 0; i < getInputs.length; i++) {
         if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
     }
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 all of the checkboxes for the elements */
 function selectAll() {
     var getInputs = document.getElementsByClassName("element_checkbox");
-    for (var i = 0, max = getInputs.length; i < max; i++) {
+    for (var i = 0; i < getInputs.length; i++) {
         if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
     }
 }
@@ -79,7 +79,7 @@ document.getElementById('selectAll').addEventListener('click', selectAll);
 
 function unselectAll() {
     var getInputs = document.getElementsByClassName("element_checkbox");
-    for (var i = 0, max = getInputs.length; i < max; i++) {
+    for (var i = 0; i < getInputs.length; i++) {
         if (getInputs[i].type === 'checkbox') getInputs[i].checked = false;
     }
 }
@@ -88,8 +88,8 @@ document.getElementById('unselectAll').addEventListener('click', unselectAll);
 
 
 //Should pull all file types and elements meant to be parsed.
-function checkboxintoarray(input, output){
-	for (var i = 0, max = input.length; i < max; i++) {
+function checkboxintoarray(input, output) {
+    for (var i = 0; i < input.length; i++) {
         if (input[i].checked) {
             output.push(input[i].id);
         }
@@ -102,10 +102,10 @@ function checkboxHandler() {
     var checkboxData = [];
 
     var getFileOutputs = document.getElementsByClassName("output_checkbox");
-	var getElementTypes = document.getElementsByClassName("element_checkbox");
+    var getElementTypes = document.getElementsByClassName("element_checkbox");
 
-	checkboxintoarray(getFileOutputs , outputFileCheckboxes );
-	checkboxintoarray(getElementTypes , elementsToBeParsedCheckboxes );
+    checkboxintoarray(getFileOutputs, outputFileCheckboxes);
+    checkboxintoarray(getElementTypes, elementsToBeParsedCheckboxes);
 
     //Construct single array for Chrome messaging.
     checkboxData[0] = outputFileCheckboxes;

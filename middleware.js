@@ -37,18 +37,15 @@ function sendBackgroundData(outputArray) {
     });
 }
 
+//Function that returns a json object representing the page data.
 function createOutputFileHeader() {
-    var outputFileHeader = "";
-    var timeStamp = new Date();
+    var timeStamp = new Date().toString();
 
-    //Pull The page title.
-    var pageURL = window.location.href;
-    //console.log(pageURL);
-
-    outputFileHeader += "Webpage elements retrieved from: " + pageURL + "\n";
-    outputFileHeader += "at: " + timeStamp + "\n";
-    outputFileHeader += "Page title: " + document.title;
-    outputFileHeader += "\n-----------------------------------\n";
+    var outputFileHeader = [{
+        'pageURL': window.location.href,
+        'timeStamp': timeStamp,
+        'pageTitle': document.title
+    }];
 
     return outputFileHeader;
 }
@@ -103,8 +100,8 @@ function parseElements(elementArray) {
 }
 
 //Wip, not really functional yet
-function getBasicElements(elementArray){
-    elementArray.forEach(function(element){
+function getBasicElements(elementArray) {
+    elementArray.forEach(function(element) {
         element.setData(element.doc_element.toString(), element.uniqueID, "xPath ToDo");
     });
     return elementArray;
