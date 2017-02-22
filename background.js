@@ -16,6 +16,9 @@ chrome.runtime.onMessage.addListener(function(
     //Logic for downloading files.
     for (var i = 0; i < outputFileCheckboxes.length; i++) {
         switch (outputFileCheckboxes[i]) {
+            case 'fileoutput_text':
+                createTextFile(outputFileHeader, elementObjects);
+                break;
             case 'fileoutput_xml':
                 createXMLFile(outputFileHeader, elementObjects);
                 break;
@@ -23,9 +26,9 @@ chrome.runtime.onMessage.addListener(function(
                 createSeleniumFile(outputFileHeader, elementObjects);
                 break;
             case 'fileoutput_jasmine':
-                //!!Temporary placement for testing!!
-                createTextFile(outputFileHeader, elementObjects);
+                createJSObject(outputFileHeader, elementObjects);
                 break;
+
             default:
                 console.log('Invalid file output.');
         }
@@ -112,7 +115,17 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 
 //TODO: Function to take sorted element object array, parse through, and create a Jasmine and/or Protractor compatable .js file and download it.
 function createJSObject(outputFileHeader, elementObjects) {
+    var fileString = '';
+    fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
+    var blob = new Blob([fileString], {
+        type: 'text/plain'
+    });
+    //console.log("Created Blob object.");
+
+    objectURL = URL.createObjectURL(blob);
+    //console.log("Made link from Blob object.");
+    download(objectURL, 'water_results.js');
 }
 
 /**
