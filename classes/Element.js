@@ -7,7 +7,7 @@ class Element {
 
     //no constructor overloading, hence the setData() method
     constructor(doc_element, uniqueID) {
-        this.doc_element = doc_element;
+        this.doc_element = doc_element; //HTMLCollection
         this.uniqueID = uniqueID;
         this.parsed = false;
 
@@ -22,6 +22,14 @@ class Element {
         this.name = name;
         this.id = id;
         this.xpath = xPath;
+    }
+
+    toJSON(){
+        return {
+            'Name': this.name,
+            'ID': this.id,
+            'XPath': this.xpath
+        };
     }
 
     /**
@@ -54,3 +62,5 @@ class Element {
     //ToDo: Helper methods for each subsection (basic/jquery/etc)
 
 }
+
+// export default { Element };

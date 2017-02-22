@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(function(
     if (message.outputArray) {
         outputFileHeader = message.outputArray[0];
         outputFileCheckboxes = message.outputArray[1];
-        elementObjects = message.outputArray[2];
+        elementObjects = JSON.parse(message.outputArray[2]);
     }
 
     //Logic for downloading files.
@@ -46,17 +46,12 @@ function createTextFile(outputFileHeader, elementObjects) {
     //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
     //console.log(outputFileCheckboxes[0]);
 
-    //Add elements to file (not working)
+    //Add elements to file
+    fileString += "\n";
     for (var i = 0; i < elementObjects.length; i++) {
-        var t3 = elementObjects[i]; //debug, gives Object, loses references
-        fileString += elementObjects[i].toString() + "\n "; //append to file
+        fileString += JSON.stringify(elementObjects[i]);
+        fileString += "\n---\n"; //append to file
     }
-
-    //Messing around with different loops
-    // elementObjects.forEach(function(element){
-    //     var test = element; //debugging
-    //     outputFileHeader += element.toString() + "\n";
-    // });
 
     // Snippet I want to keep and research later(Max)
     // var a = DOMParser(); var xml = "<node></node>"; xml = a.parseFromString(xml, "application/xml" ); xml.getElementsByTagName("node") + ""; //"[object HTMLCollection]"
