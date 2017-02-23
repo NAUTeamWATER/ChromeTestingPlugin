@@ -35,12 +35,6 @@ chrome.runtime.onMessage.addListener(function(
     }
 });
 
-
-// TODO: Function to take the element object array and sort it by element type.
-function sortElementObjects(elementObjects) {
-
-}
-
 //function for testing purposes
 function createTextFile(outputFileHeader, elementObjects) {
     var fileString = '';
@@ -51,9 +45,15 @@ function createTextFile(outputFileHeader, elementObjects) {
 
     //Add elements to file
     fileString += "\n";
-    for (var i = 0; i < elementObjects.length; i++) {
-        fileString += JSON.stringify(elementObjects[i]);
+
+    function addElementsToString(fileString, elementObject) {
+        fileString += JSON.stringify(elementObject, undefined, 2);
         fileString += "\n---\n"; //append to file
+        return fileString;
+    }
+
+    for (var i = 0; i < elementObjects.length; i++) {
+        fileString = addElementsToString(fileString, elementObjects[i]);
     }
 
     // Snippet I want to keep and research later(Max)
