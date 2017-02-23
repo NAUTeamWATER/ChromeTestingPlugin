@@ -63,20 +63,39 @@ class Element {
         this.parsed = false;
 
         //ToDo: keep basic values here as fields or delegate to helper methods?
+        this.fullhtml = null;
+        this.clazz = null;
+        this.tag = null;
         this.name = null;
+        this.title = null;
         this.id = null;
         this.xpath = null;
         this.description = null;
     }
 
-    setData(name, id, xPath) {
+    setDataDemo(clazz, tag, name, id, xPath) {
+        this.clazz = clazz;
+        this.tag = tag;
         this.name = name;
+        this.id = id;
+        this.xpath = xPath;
+    }
+
+    setData(fullhtml, clazz, tag, title, id, xPath) {
+        this.fullhtml = fullhtml;
+        this.clazz = clazz;
+        this.tag = tag;
+        this.title = title;
+        // this.name = name;
         this.id = id;
         this.xpath = xPath;
     }
 
     toJSON(){
         return {
+            // 'Full HTML': this.fullhtml,
+            'Class': this.clazz,
+            'Tag': this.tag,
             'Name': this.name,
             'ID': this.id,
             'XPath': this.xpath
@@ -164,7 +183,17 @@ function parseElements(elementArray) {
 //Wip, not really functional yet
 function getBasicElements(elementArray) {
     elementArray.forEach(function(element) {
-        element.setData(element.doc_element.toString(), element.uniqueID, "xPath ToDo");
+        element.setDataDemo(element.doc_element.getAttribute("class"),
+            element.doc_element.tagName == "" ? null : element.doc_element.tagName,
+            element.doc_element.getAttribute("name"),
+            element.doc_element.getAttribute("id"),
+            "XPath ToDo");
+        // element.setData(element.doc_element.outerHTML, element.doc_element.className, element.doc_element.tagName, element.doc_element.title ,element.doc_element.id, "xPath ToDo");
     });
     return elementArray;
+}
+
+// TODO: Function to take the element object array and sort it by element type.
+function sortElementObjects(elementArray) {
+
 }
