@@ -1,75 +1,116 @@
-// Script that runs on the current tab enviroment.
-	
-var outputData = "";
+//For use of background page console! Usage: bkg.console.log('message!');
+var bkg = chrome.extension.getBackgroundPage();
 
-var timeStamp = new Date();
+//After the DOM is loaded, add a button listener.
+//Call the script that runs on the current tab enviroment.
 
-//Pull The page title.
-var pageURL = window.location.href;
-console.log(pageURL);
 
-outputData +=  "Webpage elements retrieved from: " + pageURL+"\n";	
-outputData += "at: "+ timeStamp +"\n";
-outputData += "Page title: " + document.title;
-outputData += "\n-----------------------------------\n";
+var checkPageButton = document.getElementById('checkPage');
+checkPageButton.addEventListener('click', function() {
 
-retrieveElements();
+    //Get user checkbox data;
+    var checkboxData = checkboxHandler();
 
-/**
- * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
- * !! Will take an array as input and populates the given array with element objects. !!
- */
-function retrieveElements(){
-	var elements = document.getElementsByTagName("*");
-	console.log("Found " +elements.length+" elements.");
-	
-	for (var i = 0; i < elements.length; i++){
+    if (checkboxData[0].length <= 0) {
+        //Feedback that a output type must be selected, if not send user feedback to popup window.
+        document.getElementById('feedback').innerHTML = "<p>You must select an output file type!</p>";
 
-		switch ((elements[i].tagName).toLowerCase()){
+    } else if (checkboxData[1].length <= 0) {
+        document.getElementById('feedback').innerHTML = "<p>You must select an element!</p>";
 
-			//ToDo: typecast to element objects and then have delegation methods for each type of parsing
-			// Example:
-			// elements[i] = new Element();
-            //
-			// basicElements(); //button, links, input, etc //intuitive UI things
-			// xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
-            // angularStuff(); //ngClick
-            // jquery(); //?
-            // javascript(); //onClick //odd uses, e.g. apply method post click to change page
+    } else {
+        document.getElementById('feedback').innerHTML = "";
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function(tabs) {
+            //chrome.tabs.executeScript(tabs[0].id, {
+            //      file: 'middleware.js'
+            //  }, function() {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                checkboxData: checkboxData
+            }, function(response) {
+                //Response code here...
+            });
+        });
+    }
 
-			//long term: inject css to highlight/label items analyzed
+}, false); //Button listener
 
-			//checkboxes more in-depth for enabling elements
-					//all checked by default
-				//quality of life
-					//select/deselect all
-					//other category for random objects
-				//extra
-					//save selections (cookie?)
-					//error checking
 
-			case "button":
-				var buttonId = elements[i].getAttribute("id");
-     			var buttonName = elements[i].getAttribute("name");
-     		
-     			outputData += "Type: button\n";
-     			outputData += "ID: "+buttonId+"\n";
-				outputData += "Name: "+buttonName+"\n\n";
-				break;
-			
-			case "input":
-				var inputId = elements[i].getAttribute("id");
-     			var inputName = elements[i].getAttribute("name");
-     		
-     			outputData += "Type: input\n";
-     			outputData += "ID: "+inputId+"\n";
-				outputData += "Name: "+inputName+"\n\n";
-				break;
-		}
-	}
+document.addEventListener('DOMContentLoaded', function() {
+    //HTML JS for user interface//
+
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].onclick = function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        }
+    }
+
+    //Check all elements
+    var getInputs = document.getElementsByClassName("element_checkbox");
+    for (var i = 0; i < getInputs.length; i++) {
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
+    }
+
+}, false); //DOMContentLoaded Listener
+
+
+
+/* Two functions that selects or unselects
+all of the checkboxes for the elements */
+function selectAll() {
+    var getInputs = document.getElementsByClassName("element_checkbox");
+    for (var i = 0; i < getInputs.length; i++) {
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = true;
+    }
 }
-	
-//Send the output data to the background script environment though Chrome API message.
-chrome.runtime.sendMessage(outputData);
 
-//ToDo: send Object[] (and string message of checkboxes for output file types)
+document.getElementById('selectAll').addEventListener('click', selectAll);
+
+function unselectAll() {
+    var getInputs = document.getElementsByClassName("element_checkbox");
+    for (var i = 0; i < getInputs.length; i++) {
+        if (getInputs[i].type === 'checkbox') getInputs[i].checked = false;
+    }
+}
+
+document.getElementById('unselectAll').addEventListener('click', unselectAll);
+
+
+//Should pull all file types and elements meant to be parsed.
+function checkboxintoarray(input, output) {
+    for (var i = 0; i < input.length; i++) {
+        if (input[i].checked) {
+            output.push(input[i].id);
+        }
+    }
+}
+
+function checkboxHandler() {
+    var outputFileCheckboxes = [];
+    var elementsToBeParsedCheckboxes = [];
+    var checkboxData = [];
+
+    var getFileOutputs = document.getElementsByClassName("output_checkbox");
+    var getElementTypes = document.getElementsByClassName("element_checkbox");
+
+    checkboxintoarray(getFileOutputs, outputFileCheckboxes);
+    checkboxintoarray(getElementTypes, elementsToBeParsedCheckboxes);
+
+    //Construct single array for Chrome messaging.
+    checkboxData[0] = outputFileCheckboxes;
+    checkboxData[1] = elementsToBeParsedCheckboxes;
+
+    return checkboxData;
+
+}
