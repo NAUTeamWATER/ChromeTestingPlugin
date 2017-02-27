@@ -96,8 +96,8 @@ class Element {
             // 'Full HTML': this.fullhtml,
             'Class': this.clazz,
             'Tag': this.tag,
-            'Name': this.name,
             'ID': this.id,
+            'Name': this.name,
             'XPath': this.xpath
         };
     }
@@ -178,6 +178,7 @@ function retrieveElements(elementsToBeParsed) {
         if (isASelectedElementType(elements[i])) {
             //add a new Element type to the array
             var e = new Element(elements[i], uuid());
+            // e.setParsed(); //ToDo: Need to think about this; you have to typecast then look at overlap
             elementArray.push(e);
         }
     }
