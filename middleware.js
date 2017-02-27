@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(
             //Read message and assign passed in data from the frontend.
             elementsToBeParsedCheckboxes = message.checkboxData[1];
 
-            elementObjects = parseElements(retrieveElements());
+            elementObjects = parseElements(retrieveElements(elementsToBeParsedCheckboxes));
 
             //Construct data array to send to backend.
             var outputArray = [];
@@ -139,7 +139,7 @@ class Element {
  * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
  * !! Will take an array as input and populates the given array with element objects. !!
  */
-function retrieveElements() {
+function retrieveElements(elementsToBeParsed) {
 
     //ToDo: if statements for toggling which elements to access
     var elements = document.getElementsByTagName("*");
@@ -155,12 +155,31 @@ function retrieveElements() {
         return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
     };
 
+    //if the element should be used
+    var isASelectedElementType = function (html_element) {
+        if (elementsToBeParsed.includes("other")) {
+            //ToDo: Determine what "other" is and use that
+        }
+
+        for (var j = 0 ; j < elementsToBeParsed.length; j++) {
+            if (html_element.tagName == elementsToBeParsed[j].toUpperCase()) {
+                return true;
+            }
+            // if (html_element.getAttribute("role") == elementsToBeParsed[j]) {
+            //     return true;
+            // }
+        }
+        return false;
+    };
+
     //loop through all elements
     for (var i = 0; i < elements.length; i++) {
 
-        //add a new Element type to the array
-        var e = new Element(elements[i], uuid());
-        elementArray.push(e);
+        if (isASelectedElementType(elements[i])) {
+            //add a new Element type to the array
+            var e = new Element(elements[i], uuid());
+            elementArray.push(e);
+        }
     }
 
     return elementArray;
