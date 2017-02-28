@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(
             elementsToBeParsedCheckboxes = message.checkboxData[1];
 
             elementObjects = parseElements(retrieveElements(elementsToBeParsedCheckboxes));
-
+			//sortElementObjects(elementObjects);
             //Construct data array to send to backend.
             var outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
@@ -214,6 +214,17 @@ function getBasicElements(elementArray) {
 }
 
 // TODO: Function to take the element object array and sort it by element type.
+//The way it works is that it looks for the name of the element type in every part of the object 
 function sortElementObjects(elementArray) {
+	var word = String(elementsToBeParsedCheckboxes[2]);
+	word = word.toUpperCase();
+	var check = Object.values(elementArray[0]);
+	for(var i =0 ; i < check.length; i++){
+		var temp = String(check[i]);
+		if(temp.includes(word)){
+			
+		}
+	}
+}		
+	
 
-}
