@@ -1,6 +1,6 @@
 body{
-  width: 369px;
-  height: 320px;
+  width: 350px;
+  height: 500px;
 }
 
 button.accordion {
@@ -119,6 +119,117 @@ p {
     background-position: 20% 20%;
     background-repeat: no-repeat;
 
+}
+
+@import "compass/css3";
+
+*{
+  -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.csscolumns{
+  #head1{
+    display: block;
+  }
+  #head2{
+    display: none;
+  }
+}
+
+.no-csscolumns{
+  #head1{
+    display: none;
+  }
+  #head2{
+    display: block;
+  }
+}
+
+.page{
+  max-width: 1142px;
+  margin: 0 auto;
+}
+
+.columns{
+  -webkit-column-count: 3;
+  -webkit-column-gap: 26px;
+  -moz-column-count: 3;
+  -moz-column-gap: 26px;
+  column-count: 3;
+  column-gap: 26px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /* Small screen */
+  @media all and (max-width: 768px){
+    -webkit-column-count: 2;
+    -moz-column-count: 3;
+    column-count: 3;
+  }
+  /* Small screen */
+  @media all and (max-width: 600px){
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+  }
+}
+
+li{
+  position: relative;
+  border-bottom: 1px solid #cdcac8;
+  padding: 7px 7px 6px 0px;
+
+  .no-csscolumns &{
+    display: block;
+    float: left;
+    @media all and (min-width: 769px){
+      margin-right: 3.05882%;
+      width: 31.29412%;
+      &:nth-child(3n){
+        margin-right: 0;
+      }
+      &:nth-child(3n+1){
+        clear: left;
+      }
+    }
+    @media all and (min-width: 600px) and (max-width: 768px){
+      margin-right: 2.27671%;
+      width: 48.86165%;
+      &:nth-child(even){
+        margin-right: 0;
+      }
+      &:nth-child(odd){
+        clear: left;
+      }
+    }
+    @media all and (max-width: 600px){
+      width: 100%;
+    }
+  }
+}
+
+input[type=checkbox]{
+  margin-right: 5px;
+}
+
+
+/* Default State */
+.others{
+display: none;
+}
+/* Toggled State */
+input[type=checkbox]#other:checked ~ div.others {
+display:block;
+
+}
+input[type=checkbox]#other ~ div.mujers {
+display: none;
+}
+input[type=checkbox] ~ div.others {
+display: none;
 }
 
 /*W.A.T.E.R*/
