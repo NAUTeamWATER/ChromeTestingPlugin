@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(
 
             elementObjects = parseElements(retrieveElements());
             var elementObjectsFiltered = filterElements(elementObjects, elementsToBeParsedCheckboxes);
-            //elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
+            elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
 			
             //Construct data array to send to backend.
             var outputArray = [];
