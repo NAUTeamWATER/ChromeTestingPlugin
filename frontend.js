@@ -95,6 +95,9 @@ function checkboxintoarray(input, output) {
 				output.push(input[i].id);
 			}
         }
+		else if (input[i] == other){
+			break;
+		}
     }
 }
 
