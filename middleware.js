@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(
             elementObjects = parseElements(retrieveElements());
             var elementObjectsFiltered = filterElements(elementObjects, elementsToBeParsedCheckboxes);
             //elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
-
+			
             //Construct data array to send to backend.
             var outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
@@ -259,29 +259,16 @@ function getBasicElements(elementArray) {
     return elementArray;
 }
 
-// TODO: Function to take the element object array and sort it by element type.
-//The way it works is that it looks for the name of the element type in every part of the object
-// Still needs work as it is case sensitive, and no guarentee it will sort elements correctly   
+// Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes  
 function sortElementObjects(elementArray) {
 	var sortedarray = [];
 	var length = 0;
 	for(var i = 0 ; i < elementsToBeParsedCheckboxes.length; i++){
 		var word = String(elementsToBeParsedCheckboxes[i]);
-		word = word.toUpperCase();
 		for (var j = 0; j < elementArray.length;j++){
-			var go = 0;
-			var check = Object.values(elementArray[j]);
-			for(var k =0 ; k < check.length; k++){
-				var temp = String(check[k]);
-				if(temp.includes(word)){
-					go = 1;
-				}
-				else if (word == "OTHER"){
-					//go = 1;
-				}
-			}
-				
-			if (go == 1){
+			var type  = String(elementArray[j].elemEnumType);
+			type = type.toLowerCase();
+			if (type == word){
 				sortedarray[length] = elementArray[j];
 				length +=1;
 			}
