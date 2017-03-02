@@ -91,7 +91,9 @@ document.getElementById('unselectAll').addEventListener('click', unselectAll);
 function checkboxintoarray(input, output) {
     for (var i = 0; i < input.length; i++) {
         if (input[i].checked) {
-            output.push(input[i].id);
+			if (input[i] != other){
+				output.push(input[i].id);
+			}
         }
     }
 }
@@ -106,7 +108,6 @@ function checkboxHandler() {
 
     checkboxintoarray(getFileOutputs, outputFileCheckboxes);
     checkboxintoarray(getElementTypes, elementsToBeParsedCheckboxes);
-
     //Construct single array for Chrome messaging.
     checkboxData[0] = outputFileCheckboxes;
     checkboxData[1] = elementsToBeParsedCheckboxes;
