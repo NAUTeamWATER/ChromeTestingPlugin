@@ -39,6 +39,7 @@ chrome.runtime.onMessage.addListener(function(
 function createTextFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += 'Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp;
+    fileString += '\n'+ elementObjects.length + ' total elements retrieved' + (outputFileCheckboxes.length != 1 ? ', separated into ' + outputFileCheckboxes.length + ' categories.' : '. Only 1 category.');
     //For testing purposes:
     //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
     //console.log(outputFileCheckboxes[0]);
