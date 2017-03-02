@@ -17,13 +17,15 @@ chrome.runtime.onMessage.addListener(
             //Read message and assign passed in data from the frontend.
             elementsToBeParsedCheckboxes = message.checkboxData[1];
 
-            elementObjects = parseElements(retrieveElements(elementsToBeParsedCheckboxes));
-			//elementObjects = sortElementObjects(elementObjects);
+            elementObjects = parseElements(retrieveElements());
+            var elementObjectsFiltered = filterElements(elementObjects, elementsToBeParsedCheckboxes);
+            //elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
+
             //Construct data array to send to backend.
             var outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
-            outputArray[2] = JSON.stringify(elementObjects); //Call function to pull all elements. I.E. = getPageElements();
+            outputArray[2] = JSON.stringify(elementObjectsFiltered); //Call function to pull all elements. I.E. = getPageElements();
 
             sendBackgroundData(outputArray);
         }
@@ -50,6 +52,13 @@ function createOutputFileHeader() {
     return outputFileHeader;
 }
 
+ElementTypeEnum = Object.freeze({
+    BUTTON : "Button",
+    LINK : "Link",
+    OTHER : "Other"
+});
+
+
 //ToDo: Fix import issue
 /**
  * Wrapper class for DOM elements that contains a UUID (unique ID), as well as fields and helper methods.
@@ -61,6 +70,7 @@ class Element {
         this.doc_element = doc_element; //HTMLCollection
         this.uniqueID = uniqueID;
         this.parsed = false;
+        this.elemEnumType = null;
 
         //ToDo: keep basic values here as fields or delegate to helper methods?
         this.fullhtml = null;
@@ -73,7 +83,8 @@ class Element {
         this.description = null;
     }
 
-    setDataDemo(clazz, tag, name, id, xPath) {
+    setData(fullhtml, clazz, tag, name, id, xPath) {
+        this.fullhtml = fullhtml;
         this.clazz = clazz;
         this.tag = tag;
         this.name = name;
@@ -81,21 +92,16 @@ class Element {
         this.xpath = xPath;
     }
 
-    setData(fullhtml, clazz, tag, title, id, xPath) {
-        this.fullhtml = fullhtml;
-        this.clazz = clazz;
-        this.tag = tag;
-        this.title = title;
-        // this.name = name;
-        this.id = id;
-        this.xpath = xPath;
+    setElemEnumType(enumType){
+        this.elemEnumType = enumType;
     }
 
     toJSON(){
         return {
-            // 'Full HTML': this.fullhtml,
+            'Full HTML': this.fullhtml,
+            'Type': this.elemEnumType,
             'Class': this.clazz,
-            'Tag': this.tag,
+            // 'Tag': this.tag,
             'ID': this.id,
             'Name': this.name,
             'XPath': this.xpath
@@ -133,58 +139,92 @@ class Element {
 
 }
 
-
+/**
+ * Simple function to take in all elements, the filterable checkboxes clicked, and returns the array of Element objects that are of the correct types.
+ *
+ * @param elementObjects - all HTML elements on the page, already wrapped in the Element class
+ * @param filters - the checkboxes, specifically the ids of them
+ * @returns {Array} - Element objects, with .parsed=True and .enumType={some ElementTypeEnum} assigned
+ */
+function filterElements(elementObjects, filters) {
+    let returnElements = [];
+    for (let i = 0; i < elementObjects.length; i++) {
+        if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) {
+            elementObjects[i].setParsed();
+            returnElements.push(elementObjects[i]);
+        }
+    }
+    return returnElements;
+}
 
 /**
- * Function which when called takes no parameters and retrieves all UI elements given a document DOM.
- * !! Will take an array as input and populates the given array with element objects. !!
+ * A helper method for {@link filterElements} that performs the logic of determining if an element should be included in the output.
+ * It also assigns the .enumType field in Element for later sorting.
+ *
+ * @param element - The Element to examine
+ * @param filters - The checkboxes, specifically the ids of them
+ * @returns {boolean} - True if the element should be included, false otherwise
  */
-function retrieveElements(elementsToBeParsed) {
+function isInSelection(element, filters) {
+    for (let i = 0 ; i < filters.length; i++) {
+        let currFilter = filters[i];
+        //simple case, check the tagName (e.g. <button ...></button>
+        if (element.doc_element.tagName == currFilter.toUpperCase()) {
+            let enumType;
+            switch(element.doc_element.tagName) {
+                case "BUTTON":
+                    enumType = ElementTypeEnum.BUTTON;
+                    break;
+                case "LINK":
+                    enumType = ElementTypeEnum.LINK;
+                    break;
+                default:
+                    enumType = ElementTypeEnum.OTHER;
+                    break;
+            }
+            element.setElemEnumType(enumType);
+            return true;
+        } else if (element.clazz != null) { // harder case, where it is only known by the class (e.g. class="btn...")
+            switch (element.clazz.substring(0, 3)) { //first 3 characters (e.g. "btn" from "btn-whatever")
+                case "btn":
+                    if (currFilter.toUpperCase() == "BUTTON") { //if button selected
+                        element.setElemEnumType(ElementTypeEnum.BUTTON);
+                        return true;
+                    }
+                    break;
+            }
+        }
+    }
+    return false;
+}
 
-    //ToDo: if statements for toggling which elements to access
+/**
+ * Gets every element from the page and wraps it in the Element class.
+ *
+ * @returns {Array} - Array of Elements, with a unique id attributed to each.
+ */
+function retrieveElements() {
+
     var elements = document.getElementsByTagName("*");
     console.log("Found " + elements.length + " elements.");
 
     var elementArray = [];
 
-    //random IDs
-    var uuid = function() {
-        var fourChars = function() {
+    //random IDs //ToDo: Remove?
+    let uuid = function () {
+        let fourChars = function () {
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1).toUpperCase();
         };
         return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
     };
 
-    //if the element should be used
-    var isASelectedElementType = function (html_element) {
-        if (elementsToBeParsed.includes("other")) {
-            //ToDo: Determine what "other" is and use that
-        }
-
-        for (var j = 0 ; j < elementsToBeParsed.length; j++) {
-            if (html_element.tagName == elementsToBeParsed[j].toUpperCase()) {
-                return true;
-            }
-            // if (html_element.getAttribute("role") == elementsToBeParsed[j]) {
-            //     return true;
-            // }
-        }
-        return false;
-    };
-
     //loop through all elements
-    for (var i = 0; i < elements.length; i++) {
-
-        if (isASelectedElementType(elements[i])) {
-            //add a new Element type to the array
-            var e = new Element(elements[i], uuid());
-            // e.setParsed(); //ToDo: Need to think about this; you have to typecast then look at overlap
-            elementArray.push(e);
-        }
+    for (let i = 0; i < elements.length; i++) {
+        //put in wrapper class and add to array
+        elementArray.push(new Element(elements[i], uuid()));
     }
 
     return elementArray;
-
 }
 
 function parseElements(elementArray) {
@@ -200,15 +240,21 @@ function parseElements(elementArray) {
     //something to pass to sendMessage()
 }
 
-//Wip, not really functional yet
+/**
+ * Gets basic information from each element.
+ * Specifically: outerHTML, class, tagName, name, and id.
+ *
+ * @param elementArray - the array of Elements to parse
+ * @returns {*} - the element array passed in (ToDo: Necessary in JS?)
+ */
 function getBasicElements(elementArray) {
     elementArray.forEach(function(element) {
-        element.setDataDemo(element.doc_element.getAttribute("class"),
+        element.setData(element.doc_element.outerHTML,
+            element.doc_element.getAttribute("class"),
             element.doc_element.tagName == "" ? null : element.doc_element.tagName,
             element.doc_element.getAttribute("name"),
             element.doc_element.getAttribute("id"),
             "XPath ToDo");
-        // element.setData(element.doc_element.outerHTML, element.doc_element.className, element.doc_element.tagName, element.doc_element.title ,element.doc_element.id, "xPath ToDo");
     });
     return elementArray;
 }
