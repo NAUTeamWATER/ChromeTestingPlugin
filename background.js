@@ -71,7 +71,7 @@ function createTextFile(outputFileHeader, elementObjects) {
     download(objectURL, "water_results.txt");
 }
 
-//TODO: Function to take the sorted element object array, parse through, and create an XML file and download it.
+//Function to take the sorted element object array, parse through, and create an XML file and download it.
 function createXMLFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -86,10 +86,10 @@ function createXMLFile(outputFileHeader, elementObjects) {
     //Loop through elements here...
     for (var i = 0; i < elementObjects.length; i++){
       fileString += '\t<element>\n';
-      fileString += '\t\t<element_type>' + elementObjects[0].type + '</element_type>\n';
-      fileString += '\t\t<element_id>' + elementObjects[0].id + '</element_id>\n';
-      fileString += '\t\t<element_name>' + elementObjects[0].name + '</element_name>\n';
-      fileString += '\t\t<element_xpath>' + elementObjects[0].xpath + '</element_xpath>\n';
+      fileString += '\t\t<element_type>' + elementObjects[i].type + '</element_type>\n';
+      fileString += '\t\t<element_id>' + elementObjects[i].id + '</element_id>\n';
+      fileString += '\t\t<element_name>' + elementObjects[i].name + '</element_name>\n';
+      fileString += '\t\t<element_xpath>' + elementObjects[i].xpath + '</element_xpath>\n';
       fileString += '\t</element>\n';
     }
     fileString += '</elements>\n';
