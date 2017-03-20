@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(
             elementObjects = parseElements(retrieveElements());
             var elementObjectsFiltered = filterElements(elementObjects, elementsToBeParsedCheckboxes);
             elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
-			
+
             //Construct data array to send to backend.
             var outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
@@ -98,13 +98,13 @@ class Element {
 
     toJSON(){
         return {
-            'Full HTML': this.fullhtml,
-            'Type': this.elemEnumType,
-            'Class': this.clazz,
+            'fullHTML': this.fullhtml,
+            'type': this.elemEnumType,
+            'class': this.clazz,
             // 'Tag': this.tag,
-            'ID': this.id,
-            'Name': this.name,
-            'XPath': this.xpath
+            'id': this.id,
+            'name': this.name,
+            'xpath': this.xpath
         };
     }
 
@@ -259,7 +259,7 @@ function getBasicElements(elementArray) {
     return elementArray;
 }
 
-// Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes  
+// Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
 function sortElementObjects(elementArray) {
 	var sortedarray = [];
 	var length = 0;
@@ -272,10 +272,8 @@ function sortElementObjects(elementArray) {
 				sortedarray[length] = elementArray[j];
 				length +=1;
 			}
-		
+
 		}
 	}
 	return sortedarray;
-}		
-
-
+}
