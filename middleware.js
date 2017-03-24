@@ -53,9 +53,9 @@ function createOutputFileHeader() {
 }
 
 ElementTypeEnum = Object.freeze({
-    BUTTON : "Button",
-    LINK : "Link",
-    OTHER : "Other"
+    BUTTON: "Button",
+    LINK: "Link",
+    OTHER: "Other"
 });
 
 
@@ -92,11 +92,11 @@ class Element {
         this.xpath = xPath;
     }
 
-    setElemEnumType(enumType){
+    setElemEnumType(enumType) {
         this.elemEnumType = enumType;
     }
 
-    toJSON(){
+    toJSON() {
         return {
             'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
@@ -126,12 +126,12 @@ class Element {
     /**
      * Helper method for simple stringification
      */
-    toString(){
-        return "Element "+"\nID: "+this.id+"\nName: "+this.name;
+    toString() {
+        return "Element " + "\nID: " + this.id + "\nName: " + this.name;
         //ToDo
     }
 
-    static greaterThan(){
+    static greaterThan() {
         //ToDo: method to organize array of these objects in order
     }
 
@@ -166,12 +166,12 @@ function filterElements(elementObjects, filters) {
  * @returns {boolean} - True if the element should be included, false otherwise
  */
 function isInSelection(element, filters) {
-    for (let i = 0 ; i < filters.length; i++) {
+    for (let i = 0; i < filters.length; i++) {
         let currFilter = filters[i];
         //simple case, check the tagName (e.g. <button ...></button>
         if (element.doc_element.tagName == currFilter.toUpperCase()) {
             let enumType;
-            switch(element.doc_element.tagName) {
+            switch (element.doc_element.tagName) {
                 case "BUTTON":
                     enumType = ElementTypeEnum.BUTTON;
                     break;
@@ -211,8 +211,8 @@ function retrieveElements() {
     var elementArray = [];
 
     //random IDs //ToDo: Remove?
-    let uuid = function () {
-        let fourChars = function () {
+    let uuid = function() {
+        let fourChars = function() {
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1).toUpperCase();
         };
         return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
@@ -254,26 +254,69 @@ function getBasicElements(elementArray) {
             element.doc_element.tagName == "" ? null : element.doc_element.tagName,
             element.doc_element.getAttribute("name"),
             element.doc_element.getAttribute("id"),
-            "XPath ToDo");
+            getElementXPath(element.doc_element));
     });
     return elementArray;
 }
 
 // Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
 function sortElementObjects(elementArray) {
-	var sortedarray = [];
-	var length = 0;
-	for(var i = 0 ; i < elementsToBeParsedCheckboxes.length; i++){
-		var word = String(elementsToBeParsedCheckboxes[i]);
-		for (var j = 0; j < elementArray.length;j++){
-			var type  = String(elementArray[j].elemEnumType);
-			type = type.toLowerCase();
-			if (type == word){
-				sortedarray[length] = elementArray[j];
-				length +=1;
-			}
+    var sortedarray = [];
+    var length = 0;
+    for (var i = 0; i < elementsToBeParsedCheckboxes.length; i++) {
+        var word = String(elementsToBeParsedCheckboxes[i]);
+        for (var j = 0; j < elementArray.length; j++) {
+            var type = String(elementArray[j].elemEnumType);
+            type = type.toLowerCase();
+            if (type == word) {
+                sortedarray[length] = elementArray[j];
+                length += 1;
+            }
 
-		}
-	}
-	return sortedarray;
+        }
+    }
+    return sortedarray;
 }
+
+
+/**
+ * Gets an XPath for an element which describes its hierarchical location.
+ * Taken from: https://stackoverflow.com/questions/3454526/how-to-calculate-the-xpath-position-of-an-element-using-javascript
+ * Adapted from open source firebug xpath code.
+ */
+function getElementXPath(element) {
+    if (element && element.id)
+        return '//*[@id="' + element.id + '"]';
+    else
+        return getElementTreeXPath(element);
+      //return element.toString();
+};
+
+function getElementTreeXPath(element) {
+    var paths = [];
+
+    // Use nodeName (instead of localName) so namespace prefix is included (if any).
+    for (; element && element.nodeType == 1; element = element.parentNode) {
+        var index = 0;
+        // EXTRA TEST FOR ELEMENT.ID
+        if (element && element.id) {
+            paths.splice(0, 0, '/*[@id="' + element.id + '"]');
+            break;
+        }
+
+        for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
+            // Ignore document type declaration.
+            if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
+                continue;
+
+            if (sibling.nodeName == element.nodeName)
+                ++index;
+        }
+
+        var tagName = element.nodeName.toLowerCase();
+        var pathIndex = (index ? "[" + (index + 1) + "]" : "");
+        paths.splice(0, 0, tagName + pathIndex);
+    }
+
+    return paths.length ? "/" + paths.join("/") : null;
+};
