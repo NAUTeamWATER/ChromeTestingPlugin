@@ -17,12 +17,13 @@ chrome.runtime.onMessage.addListener(
             //Read message and assign passed in data from the frontend.
             elementsToBeParsedCheckboxes = message.checkboxData[1];
 
-            elementObjects = parseElements(retrieveElements());
-            var elementObjectsFiltered = filterElements(elementObjects, elementsToBeParsedCheckboxes);
-            elementObjectsFiltered = sortElementObjects(elementObjectsFiltered);
+            //get all filtered, data complete objects
+            elementObjects = parseElements(retrieveElements(), elementsToBeParsedCheckboxes);
+            //sort them
+            let elementObjectsFiltered = sortElementObjects(elementObjects);
 
             //Construct data array to send to backend.
-            var outputArray = [];
+            let outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
             outputArray[2] = JSON.stringify(elementObjectsFiltered); //Call function to pull all elements. I.E. = getPageElements();
@@ -227,17 +228,23 @@ function retrieveElements() {
     return elementArray;
 }
 
-function parseElements(elementArray) {
+/**
+ * Parses the elements on the webpage, taking in a list of wrapper custom "Element"s and returning a new list of "Element"s that has the correct data tags on them
+ * (e.g. types, Buttons, links, etc.), and is filtered to include only what is checked to include in the UI,
+ *
+ * @param elementArray - the array of custom Elements, includes every element on the page
+ * @param UIselection - the checkboxes selected in the GUI
+ * @returns {*} - a new array of filtered Elements with data on them
+ */
+function parseElements(elementArray, UIselection) {
 
-    //if (!elementArray[i].isParsedAlready())
+    let basicElementArray = getBasicElements(elementArray); //button, links, input, xpath, etc //intuitive UI things that will ALWAYS be used
+    let basicElementArrayFiltered = filterElements(basicElementArray, UIselection); //filter the elements and only return what is checked //ToDo: Move up one for better efficiency, no need to loop through ones we won't include
+    let basicAndJSElementsFiltered = addJSElements(basicElementArrayFiltered, UIselection); //add JS element data, e.g. on-click
+    let basicJSAndAngularElementsFiltered = getAngularElements(basicAndJSElementsFiltered, UIselection); //add the angular element data, e.g. ng-click
+    return basicJSAndAngularElementsFiltered; //return the updated list
 
-    return getBasicElements(elementArray); //button, links, input, etc //intuitive UI things
-    // xPath(); //xpaths for all items (keep here, or elsewhere, internally?)
-    // angularStuff(); //ngClick
-    // jquery(); //?
-    // javascript(); //onClick //odd uses, e.g. apply method post click to change page
-
-    //something to pass to sendMessage()
+    // jquery(); //or others
 }
 
 /**
@@ -245,7 +252,7 @@ function parseElements(elementArray) {
  * Specifically: outerHTML, class, tagName, name, and id.
  *
  * @param elementArray - the array of Elements to parse
- * @returns {*} - the element array passed in (ToDo: Necessary in JS?)
+ * @returns {*} - the element array passed in
  */
 function getBasicElements(elementArray) {
     elementArray.forEach(function(element) {
@@ -258,6 +265,36 @@ function getBasicElements(elementArray) {
     });
     return elementArray;
 }
+
+
+/**
+ * Adds JS specific data to the element if it has special JS functionality (e.g. on-click)
+ * Only does so if the JS checkbox is selected.
+ * Will override isParsed for that element, making it notated as parsed.
+ * Returns an updated element array.
+ *
+ * @param basicElementArray - the input element array
+ * @param UIselection - the checkboxes selected
+ */
+function addJSElements(basicElementArray, UIselection) {
+    //ToDo
+    return basicElementArray; //placeholder for testing, remove once it is actually working
+}
+
+/**
+ * Adds AngularJS specific data to the element if it has special Angular functionality (e.g. ng-click)
+ * Only does so if the Angular checkbox is selected.
+ * Will override isParsed for that element, making it notated as parsed.
+ * Returns an updated element array.
+ *
+ * @param basicElementArray - the input element array
+ * @param UIselection - the checkboxes selected
+ */
+function getAngularElements(basicElementArray, UIselection) {
+    //ToDo
+    return basicElementArray; //placeholder for testing, remove once it is actually working
+}
+
 
 // Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
 function sortElementObjects(elementArray) {
