@@ -56,7 +56,7 @@ function createOutputFileHeader() {
 ElementTypeEnum = Object.freeze({
     BUTTON: "Button",
     LINK: "Link",
-    OTHER: "Other"
+    INPUT: "Input"
 });
 
 
@@ -179,21 +179,12 @@ function isInSelection(element, filters) {
                 case "LINK":
                     enumType = ElementTypeEnum.LINK;
                     break;
-                default:
-                    enumType = ElementTypeEnum.OTHER;
+                case "INPUT":
+                    enumType = ElementTypeEnum.INPUT;
                     break;
             }
             element.setElemEnumType(enumType);
             return true;
-        } else if (element.clazz != null) { // harder case, where it is only known by the class (e.g. class="btn...")
-            switch (element.clazz.substring(0, 3)) { //first 3 characters (e.g. "btn" from "btn-whatever")
-                case "btn":
-                    if (currFilter.toUpperCase() == "BUTTON") { //if button selected
-                        element.setElemEnumType(ElementTypeEnum.BUTTON);
-                        return true;
-                    }
-                    break;
-            }
         }
     }
     return false;
