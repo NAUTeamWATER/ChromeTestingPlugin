@@ -239,11 +239,9 @@ function retrieveElements() {
 function parseElements(elementArray, UIselection) {
 
     let basicElementArray = getBasicElements(elementArray); //button, links, input, xpath, etc //intuitive UI things that will ALWAYS be used
-    let basicElementArrayFiltered = filterElements(basicElementArray, UIselection); //filter the elements and only return what is checked //ToDo: Move up one for better efficiency, no need to loop through ones we won't include
-    let basicAndJSElementsFiltered = addJSElements(basicElementArrayFiltered, UIselection); //add JS element data, e.g. on-click
-    let basicJSAndAngularElementsFiltered = getAngularElements(basicAndJSElementsFiltered, UIselection); //add the angular element data, e.g. ng-click
-    return basicJSAndAngularElementsFiltered; //return the updated list
-
+    let basicAndJSElements = addJSElements(basicElementArray, UIselection); //add JS element data, e.g. on-click
+    let basicJSAndAngularElements = getAngularElements(basicAndJSElements, UIselection); //add the angular element data, e.g. ng-click
+    return filterElements(basicJSAndAngularElements, UIselection); //return the filtered list (culls out elements not included in the UI)
     // jquery(); //or others
 }
 
