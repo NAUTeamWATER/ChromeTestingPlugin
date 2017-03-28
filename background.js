@@ -80,7 +80,7 @@ function createXMLFile(outputFileHeader, elementObjects) {
     fileString += '<page_data>\n';
     fileString += '\t<page_url>' + outputFileHeader[0].pageURL + '</page_url>\n';
     fileString += '\t<timestamp>' + outputFileHeader[0].timeStamp + '</timestamp>\n';
-    //fileString += '\t<page_title>' + outputFileHeader[0].pageTitle + '</page_title>\n';
+    fileString += '\t<page_title>' + sanitizeString(outputFileHeader[0].pageTitle) + '</page_title>\n';
     fileString += '</page_data>\n';
     fileString += '<elements>\n';
     //Loop through elements here...
@@ -157,7 +157,8 @@ function download(objectURL, fileName) {
  * @returns {string} - The name that the file should be.
  */
 function generateFileName(pageTitle, timeStamp){
-  var fileName = pageTitle.replace(/[^a-z\d]+/gi, "");
+  var fileName = sanitizeString(pageTitle).split(' ').join('_');
+
   if (fileName === ""){
     fileName = 'UntitledPage';
   }
@@ -166,8 +167,21 @@ function generateFileName(pageTitle, timeStamp){
   fileName += '_'+timeString[1]+'_';
   fileName += timeString[2]+'_';
   fileName += timeString[3]+'_';
-  var time = timeString[4].split(':').join('_');
-  fileName += time;
+  fileName += timeString[4].split(':').join('_');
 
   return fileName;
+}
+
+/**
+ * A helper function to remove any character in a string other than letters and numbers using a regexpr.
+ * Multiple spaces/tabs/newlines are also replaced with single spaces.
+ *
+ * @param string - The input string to be sanitized.
+ * @returns {string} - The sanitized string.
+ */
+function sanitizeString(string){
+  var sanitizedString = string.replace(/[^a-z\d\s]+/gi, "");
+  sanitizedString = sanitizedString.replace(/\s\s+/g, ' ');
+
+  return sanitizedString;
 }
