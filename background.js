@@ -68,7 +68,7 @@ function createTextFile(outputFileHeader, elementObjects) {
     objectURL = URL.createObjectURL(blob);
     console.log("Made link from Blob object.");
 
-    download(objectURL, "water_results.txt");
+    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
 }
 
 //Function to take the sorted element object array, parse through, and create an XML file and download it.
@@ -80,7 +80,7 @@ function createXMLFile(outputFileHeader, elementObjects) {
     fileString += '<page_data>\n';
     fileString += '\t<page_url>' + outputFileHeader[0].pageURL + '</page_url>\n';
     fileString += '\t<timestamp>' + outputFileHeader[0].timeStamp + '</timestamp>\n';
-    fileString += '\t<page_title>' + outputFileHeader[0].pageTitle + '</page_title>\n';
+    //fileString += '\t<page_title>' + outputFileHeader[0].pageTitle + '</page_title>\n';
     fileString += '</page_data>\n';
     fileString += '<elements>\n';
     //Loop through elements here...
@@ -102,7 +102,7 @@ function createXMLFile(outputFileHeader, elementObjects) {
 
     objectURL = URL.createObjectURL(blob);
     //console.log("Made link from Blob object.");
-    download(objectURL, 'water_results.xml');
+    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
 }
 
 //TODO: Function to take sorted element object array, parse through, and create a Selenium compatible .java file and download it.
@@ -118,7 +118,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 
     objectURL = URL.createObjectURL(blob);
     //console.log("Made link from Blob object.");
-    download(objectURL, 'water_results.java');
+    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
 
 }
 
@@ -134,7 +134,7 @@ function createJSObject(outputFileHeader, elementObjects) {
 
     objectURL = URL.createObjectURL(blob);
     //console.log("Made link from Blob object.");
-    download(objectURL, 'water_results.js');
+    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
 }
 
 /**
@@ -147,4 +147,24 @@ function download(objectURL, fileName) {
             filename: fileName
         },
         function(id) {});
+}
+
+/**
+ * A helper function to generate a custom file name for a file to be downloaded.
+ *
+ * @param pageTitle - The string of the page title where the elements were pulled from.
+ * @param timeStamp - The string of the timeStamp
+ * @returns {string} - The name that the file should be.
+ */
+function generateFileName(pageTitle, timeStamp){
+  var fileName = pageTitle.replace(/[^a-z\d]+/gi, "");
+  //Convert timestamp from: Mon Mar 27 2017 23:58:30 GMT-0700 (MST)
+  var timeString = timeStamp.split(' ', 5);
+  fileName += '_'+timeString[1]+'_';
+  fileName += timeString[2]+'_';
+  fileName += timeString[3]+'_';
+  var time = timeString[4].split(':').join('_');
+  fileName += time;
+
+  return fileName;
 }
