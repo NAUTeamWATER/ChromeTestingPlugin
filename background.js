@@ -158,6 +158,9 @@ function download(objectURL, fileName) {
  */
 function generateFileName(pageTitle, timeStamp){
   var fileName = pageTitle.replace(/[^a-z\d]+/gi, "");
+  if (fileName === ""){
+    fileName = 'UntitledPage';
+  }
   //Convert timestamp from: Mon Mar 27 2017 23:58:30 GMT-0700 (MST)
   var timeString = timeStamp.split(' ', 5);
   fileName += '_'+timeString[1]+'_';
