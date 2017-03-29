@@ -1,5 +1,5 @@
 body{
-  width: 350px;
+  width: 370px;
   height: 500px;
 }
 
@@ -234,3 +234,29 @@ display: none;
 
 /*W.A.T.E.R*/
 h1 { color: #000000; font-family: 'Helvetica Neue', sans-serif; font-size: 25px; font-weight: bold; letter-spacing: -1px; line-height: 1; text-align: center; }
+
+#col {
+position: relative;
+-moz-column-count: 3;
+-webkit-column-count: 3;
+column-count: 3;
+}
+
+.container div {
+			padding: 1%;
+			box-sizing: border-box;
+			min-height: 500px;
+		}
+		.left-col {
+			width: 33%;
+			float: left;
+		}
+
+    .right-col{
+      width: 33%;
+			float: left;
+    }
+		.center-col {
+			width: 33%;
+			float: left;
+		}
