@@ -116,7 +116,13 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += 'public class SampleTestClass { \n\n';
     for (var i = 0; i < elementObjects.length; i++){
 		fileString += '/*' +elementObjects[i].fullHTML + '*/\n';
-		fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
+		if (elementObjects[i].id != null){
+			fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
+		}
+		else{
+			fileString += '   public void '+elementObjects[i].type + elementObjects[i].class + '(){\n' ;
+		}
+		//fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
 		fileString += '\n';
 		fileString += '   }';
 		fileString += '\n';
