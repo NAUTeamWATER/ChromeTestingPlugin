@@ -315,7 +315,7 @@ function getElementXPath(element) {
         return '//*[@id="' + element.id + '"]';
     else
         return getElementTreeXPath(element);
-      //return element.toString();
+    //return element.toString();
 };
 
 function getElementTreeXPath(element) {

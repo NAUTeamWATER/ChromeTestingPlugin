@@ -138,8 +138,10 @@ function createJSObject(outputFileHeader, elementObjects) {
 }
 
 /**
- * Function that takes an objectURL and a string fileName and makes use of the ChromeAPI download to
- * download the object as a file.
+ * Function that takes an objectURL and a string fileName and makes use of the ChromeAPI download to download the object as a file.
+ *
+ * @param objectURL - The Blob type URL to be downloaded.
+ * @param fileName - The name of the output file to be downloaded.
  */
 function download(objectURL, fileName) {
     chrome.downloads.download({
