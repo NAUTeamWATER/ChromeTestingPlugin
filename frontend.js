@@ -125,11 +125,7 @@ function checkboxHandler() {
 function checkboxintoarray(input, output) {
     for (var i = 0; i < input.length; i++) {
         if (input[i].checked) {
-            if (input[i] != other) {
-                output.push(input[i].id);
-            }
-        } else if (input[i] == other) {
-            break;
+            output.push(input[i].id);
         }
     }
 }
