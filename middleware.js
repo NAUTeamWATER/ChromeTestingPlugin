@@ -19,6 +19,8 @@ chrome.runtime.onMessage.addListener(
 
             //get all filtered, data complete objects
             elementObjects = parseElements(retrieveElements(), elementsToBeParsedCheckboxes);
+            //set the descriptive name
+            generateAndSetDescriptiveName(elementObjects);
             //sort them
             let elementObjectsFiltered = sortElementObjects(elementObjects);
 
@@ -82,6 +84,7 @@ class Element {
         this.id = null;
         this.xpath = null;
         this.description = null;
+        this.descriptiveName = null;
     }
 
     setData(fullhtml, clazz, tag, name, id, xPath) {
@@ -97,8 +100,13 @@ class Element {
         this.elemEnumType = enumType;
     }
 
+    setDescriptiveName(name) {
+        this.descriptiveName = name;
+    }
+
     toJSON() {
         return {
+            'descriptiveName': this.descriptiveName,
             'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
             'class': this.clazz,
@@ -253,6 +261,44 @@ function getBasicElements(elementArray) {
             getElementXPath(element.doc_element));
     });
     return elementArray;
+}
+
+/**
+ * Generate and set a descriptive name "E.g. Home Button" for each element
+ * @param elementObjects
+ */
+function generateAndSetDescriptiveName(elementObjects) {
+    elementObjects.forEach(function(element) {
+        let name = generateDescriptiveName(element);
+        element.setDescriptiveName(name);
+    });
+}
+
+
+/**
+ * Generate a (preferably) unique name
+ *
+ * @param element - the element to analyze
+ * @returns {*} - the string representing the name to display
+ */
+function generateDescriptiveName(element) {
+    if (element.name != null) {
+        return element.name;
+    } else {
+        if (element.type != null) {
+            if (element.id != null) {
+                return element.type.toString().concat(element.id.toString()); //type + id
+            } else {
+                return element.type.toString().concat(element.uniqueID.toString()); //type + uniqueID; gross but will work
+            }
+        } else {
+            if (element.id != null) {
+                return element.id.toString(); //just return ID
+            } else {
+                return element.uniqueID.toString(); //just return UUID as last resort
+            }
+        }
+    }
 }
 
 
