@@ -110,7 +110,25 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
     //Loop through elements here...
-
+	fileString += '\n';
+	fileString += 'import org.openqa.selenium.*;';
+	fileString += '\n\n';
+	fileString += 'public class SampleTestClass { \n\n';
+    for (var i = 0; i < elementObjects.length; i++){
+		fileString += '/*' +elementObjects[i].fullHTML + '*/\n';
+		if (elementObjects[i].id != null){
+			fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
+		}
+		else{
+			fileString += '   public void '+elementObjects[i].type + elementObjects[i].class + '(){\n' ;
+		}
+		//fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
+		fileString += '\n';
+		fileString += '   }';
+		fileString += '\n';
+    }
+	fileString += '}';
+	
     var blob = new Blob([fileString], {
         type: 'text/plain'
     });
