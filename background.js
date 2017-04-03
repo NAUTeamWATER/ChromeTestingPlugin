@@ -109,11 +109,30 @@ function createXMLFile(outputFileHeader, elementObjects) {
 function createSeleniumFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
+	
+	//finds non null element data and makes a WebElement out of it   
+	function FindNonNullValue(fileString, elementObject) {
+		if (elementObject.name != null){
+			fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObject.name  + '"));\n' ;
+		}
+		else if(elementObject.id != null){
+			fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '"));\n' ;
+		}
+		else if(elementObject.class != null){
+			fileString += '      WebElement webElement = webDriver.findElement(By.class("' + elementObject.class  + '"));\n' ;
+		}
+		else {
+			fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '"));\n' ;
+		}
+		return fileString;
+    }
+	
     //Loop through elements here...
 	fileString += '\n';
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
 	fileString += 'public class SampleTestClass { \n\n';
+	fileString += '   public WebDriver webDriver;\n\n'
     for (var i = 0; i < elementObjects.length; i++){
 		fileString += '/*' +elementObjects[i].fullHTML + '*/\n';
 		if (elementObjects[i].id != null){
@@ -122,10 +141,10 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		else{
 			fileString += '   public void '+elementObjects[i].type + elementObjects[i].class + '(){\n' ;
 		}
-		//fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
 		fileString += '\n';
+		fileString = FindNonNullValue(fileString, elementObjects[i]);
 		fileString += '   }';
-		fileString += '\n';
+		fileString += '\n\n';
     }
 	fileString += '}';
 	
