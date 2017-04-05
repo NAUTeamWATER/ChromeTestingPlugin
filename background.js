@@ -126,7 +126,22 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		}
 		return fileString;
     }
-	
+	//adds testing functionality to webElement; Need to see if actually works with Selenium
+	function SetupTesting(fileString, elementObject) {
+		if (elementObject.type == 'Button'){
+			fileString += '      webElement.click();\n' ;
+		}
+		else if(elementObject.type == 'Link'){
+			fileString += '      webElement.click();\n' ;
+		}
+		else if(elementObject.type == 'Input'){
+			fileString += '      webElement.getAttribute("value");\n' ;
+		}
+		else {
+			return fileString;
+		}
+		return fileString;
+    }
     //Loop through elements here...
 	fileString += '\n';
 	fileString += 'import org.openqa.selenium.*;';
@@ -143,8 +158,22 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		}
 		fileString += '\n';
 		fileString = FindNonNullValue(fileString, elementObjects[i]);
+		fileString = SetupTesting(fileString, elementObjects[i]);
 		fileString += '   }';
 		fileString += '\n\n';
+		if (elementObjects[i].type == 'Input'){
+			if (elementObjects[i].id != null){
+				fileString += '   public void set'+elementObjects[i].type + elementObjects[i].id + '(String value){\n' ;
+			}
+			else{
+				fileString += '   public void set'+elementObjects[i].type + elementObjects[i].class + '(String value){\n' ;
+			}
+			fileString += '\n';
+			fileString = FindNonNullValue(fileString, elementObjects[i]);
+			fileString += '      webElement.sendKeys(value);\n' ;			
+			fileString += '   }';
+			fileString += '\n\n';
+		}
     }
 	fileString += '}';
 	
