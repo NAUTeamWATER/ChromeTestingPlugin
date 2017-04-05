@@ -11,7 +11,6 @@ var elementObjects = []; //Will eventually be an array of objects...
 chrome.runtime.onMessage.addListener(
 
     function(message, sender, sendResponse) {
-        console.log("here");
 
         if (message.checkboxData) {
             //Read message and assign passed in data from the frontend.
@@ -270,6 +269,7 @@ function getBasicElements(elementArray) {
 function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
         let name = generateDescriptiveName(element);
+        //name = checkForUniqueName(elementObjects, name);
         element.setDescriptiveName(name);
     });
 }
@@ -287,7 +287,7 @@ function generateDescriptiveName(element) {
     } else {
         if (element.type != null) {
             if (element.id != null) {
-                return element.type.toString().concat(element.id.toString()); //type + id
+                return element.id.toString().concat(element.type.toString()); //type + id
             } else {
                 return element.type.toString().concat(element.uniqueID.toString()); //type + uniqueID; gross but will work
             }
@@ -297,6 +297,32 @@ function generateDescriptiveName(element) {
             } else {
                 return element.uniqueID.toString(); //just return UUID as last resort
             }
+        }
+    }
+}
+
+/**
+ * TODO: Function to remove anything but letters and numbers from a descriptive name
+ * Multiple words separated by a space are made into camelCase
+ *
+ * @param name - String of the unsanitized descriptive name
+ * @returns sanitizedName - Sanitized descriptive name
+ */
+function sanitizeDescriptiveName(name) {
+
+}
+
+/**
+ * TODO: Function to check and make any descriptive name unique.
+ *
+ * @param elementObjects - The array of elements
+ * @param name - The generated descriptive name
+ * @returns name - The unique descriptive name
+ */
+function checkForUniqueName(elementObjects, name) {
+    for (let i = 0; i < elementObjects.length; i++) {
+        if (name == elementObjects[i].descriptiveName) {
+
         }
     }
 }
