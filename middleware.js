@@ -268,7 +268,7 @@ function getBasicElements(elementArray) {
  */
 function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
-        let name = generateDescriptiveName(element);
+        let name = generateDescriptiveNameLogic(element);
         //name = checkForUniqueName(elementObjects, name);
         element.setDescriptiveName(name);
     });
@@ -281,7 +281,7 @@ function generateAndSetDescriptiveName(elementObjects) {
  * @param element - the element to analyze
  * @returns {*} - the string representing the name to display
  */
-function generateDescriptiveName(element) {
+function generateDescriptiveNameLogic(element) {
     if (element.name != null) {
         return element.name;
     } else {
@@ -289,16 +289,28 @@ function generateDescriptiveName(element) {
             if (element.id != null) {
                 return element.id.toString().concat(element.type.toString()); //type + id
             } else {
-                return element.type.toString().concat(element.uniqueID.toString()); //type + uniqueID; gross but will work
+                //return element.type.toString().concat(element.uniqueID.toString()); //type + uniqueID; gross but will work
+                return generateDescriptiveName(element);
             }
         } else {
             if (element.id != null) {
                 return element.id.toString(); //just return ID
             } else {
-                return element.uniqueID.toString(); //just return UUID as last resort
+                //return element.uniqueID.toString(); //just return UUID as last resort
+                return generateDescriptiveName(element);
             }
         }
     }
+}
+
+function generateDescriptiveName(element) {
+    if (element.textContent != null || element.textContent != ''){
+      //var sanitizedName = sanitizeDescriptiveName(element.textContent.toString());
+      //return sanitizedName;
+      //console.log(element.textContent);
+      return element.textContent;
+    }
+    return element.uniqueID.toString();
 }
 
 /**
@@ -309,7 +321,10 @@ function generateDescriptiveName(element) {
  * @returns sanitizedName - Sanitized descriptive name
  */
 function sanitizeDescriptiveName(name) {
+  var sanitizedString = string.replace(/[^a-z\d\s]+/gi, "");
+  sanitizedString = sanitizedString.replace(/\s\s+/g, ' ');
 
+  return sanitizedString;
 }
 
 /**
