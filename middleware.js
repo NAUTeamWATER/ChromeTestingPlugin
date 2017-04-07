@@ -268,7 +268,7 @@ function getBasicElements(elementArray) {
  */
 function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
-        let name = generateDescriptiveNameLogic(element);
+        let name = generateDescriptiveName(element);
         //name = checkForUniqueName(elementObjects, name);
         element.setDescriptiveName(name);
     });
@@ -281,50 +281,76 @@ function generateAndSetDescriptiveName(elementObjects) {
  * @param element - the element to analyze
  * @returns {*} - the string representing the name to display
  */
-function generateDescriptiveNameLogic(element) {
-    if (element.name != null) {
-        return element.name;
-    } else {
-        if (element.type != null) {
-            if (element.id != null) {
-                return element.id.toString().concat(element.type.toString()); //type + id
-            } else {
-                //return element.type.toString().concat(element.uniqueID.toString()); //type + uniqueID; gross but will work
-                return generateDescriptiveName(element);
-            }
-        } else {
-            if (element.id != null) {
-                return element.id.toString(); //just return ID
-            } else {
-                //return element.uniqueID.toString(); //just return UUID as last resort
-                return generateDescriptiveName(element);
-            }
-        }
-    }
-}
-
 function generateDescriptiveName(element) {
-    if (element.textContent != null || element.textContent != ''){
-      //var sanitizedName = sanitizeDescriptiveName(element.textContent.toString());
-      //return sanitizedName;
-      //console.log(element.textContent);
-      return element.textContent;
+    if (element.name != null) {
+        return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.name) + ' ' + element.doc_element.tagName.toLowerCase())); //Name + Type
+
+    } else if (element.id != null) {
+        return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.id) + ' ' + element.doc_element.tagName.toLowerCase())); //ID + Type
+
+    } else {
+        if (element.doc_element.textContent != '') {
+            var sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
+            if (sanitizedName.trim() == '') {
+                //Make sure the sanitized name is not an empty string
+                return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
+            }
+            sanitizedName = sanitizedName + ' ' + element.doc_element.tagName.toLowerCase();
+            return capitalizeFirstLetter(camelize(sanitizedName));
+        }
+        return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
     }
-    return element.uniqueID.toString();
 }
 
 /**
- * TODO: Function to remove anything but letters and numbers from a descriptive name
- * Multiple words separated by a space are made into camelCase
+ * Get and return the element's tag name in case that there is no other descriptive name.
+ *
+ * @param element - the element to use
+ * @returns {string} - the element's tag name
+ */
+function getElemTypeAsDescriptiveName(element) {
+    //TODO: Set flag to include full HTML in output file.
+    return element.doc_element.tagName.toLowerCase();
+}
+
+/**
+ * TODO: Function to remove anything but letters and numbers from a descriptive name.
+ * Whitespace on the front and back of the string is trimmed.
  *
  * @param name - String of the unsanitized descriptive name
- * @returns sanitizedName - Sanitized descriptive name
+ * @returns {string} - Sanitized descriptive name
  */
 function sanitizeDescriptiveName(name) {
-  var sanitizedString = string.replace(/[^a-z\d\s]+/gi, "");
-  sanitizedString = sanitizedString.replace(/\s\s+/g, ' ');
+    var sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
+    sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
+    return sanitizedName.trim();
+}
 
-  return sanitizedString;
+/**
+ * Function to return a string with the first character capitalized.
+ *
+ * @param name - String of descriptive name
+ * @returns {string} - String of descriptive name with the first character capitalized
+ */
+function capitalizeFirstLetter(name) {
+    //Make sure the first character is a letter and not a number.
+    if (name.charAt(0).match(/[a-z]/i)) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+    return name;
+}
+
+/**
+ * Function to camelize a string of words separated by spaces.
+ *
+ * @param name - String to be camelized
+ * @returns {string} - Camelized string
+ */
+function camelize(name) {
+    return name.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+        if (+match === 0) return "";
+        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+    });
 }
 
 /**
@@ -336,7 +362,7 @@ function sanitizeDescriptiveName(name) {
  */
 function checkForUniqueName(elementObjects, name) {
     for (let i = 0; i < elementObjects.length; i++) {
-        if (name == elementObjects[i].descriptiveName) {
+        if (elementObjects[i].descriptiveName.startsWith(name)) {
 
         }
     }
@@ -385,7 +411,6 @@ function sortElementObjects(elementArray) {
                 sortedarray[length] = elementArray[j];
                 length += 1;
             }
-
         }
     }
     return sortedarray;
@@ -402,16 +427,14 @@ function getElementXPath(element) {
         return '//*[@id="' + element.id + '"]';
     else
         return getElementTreeXPath(element);
-    //return element.toString();
 };
 
 function getElementTreeXPath(element) {
     var paths = [];
 
-    // Use nodeName (instead of localName) so namespace prefix is included (if any).
     for (; element && element.nodeType == 1; element = element.parentNode) {
         var index = 0;
-        // EXTRA TEST FOR ELEMENT.ID
+
         if (element && element.id) {
             paths.splice(0, 0, '/*[@id="' + element.id + '"]');
             break;
