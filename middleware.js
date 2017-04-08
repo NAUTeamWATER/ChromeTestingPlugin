@@ -84,6 +84,7 @@ class Element {
         this.xpath = null;
         this.description = null;
         this.descriptiveName = null;
+        this.hasDescriptiveName = false;
     }
 
     setData(fullhtml, clazz, tag, name, id, xPath) {
@@ -105,6 +106,7 @@ class Element {
 
     toJSON() {
         return {
+            'hasDescriptiveName': this.hasDescriptiveName,
             'descriptiveName': this.descriptiveName,
             'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
@@ -270,6 +272,12 @@ function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
         let name = generateDescriptiveName(element);
         //name = checkForUniqueName(elementObjects, name);
+
+        // //ToDo - @Peter (Not sure exactly how you want to address this; here's one option)
+        // if (isActuallyDescriptive(name)) {
+        //     element.descriptiveName = true;
+        // }
+
         element.setDescriptiveName(name);
     });
 }
