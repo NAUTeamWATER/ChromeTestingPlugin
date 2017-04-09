@@ -18,10 +18,12 @@ chrome.runtime.onMessage.addListener(
 
             //get all filtered, data complete objects
             elementObjects = parseElements(retrieveElements(), elementsToBeParsedCheckboxes);
-            //set the descriptive name
-            generateAndSetDescriptiveName(elementObjects);
+
             //sort them
             let elementObjectsFiltered = sortElementObjects(elementObjects);
+
+            //set the descriptive name
+            generateAndSetDescriptiveName(elementObjectsFiltered);
 
             //Construct data array to send to backend.
             let outputArray = [];
@@ -102,6 +104,10 @@ class Element {
 
     setDescriptiveName(name) {
         this.descriptiveName = name;
+    }
+
+    setHasDescriptiveName(bool) {
+      this.hasDescriptiveName = bool;
     }
 
     toJSON() {
@@ -291,9 +297,11 @@ function generateAndSetDescriptiveName(elementObjects) {
  */
 function generateDescriptiveName(element) {
     if (element.name != null) {
+        element.setHasDescriptiveName(true);
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.name) + ' ' + element.doc_element.tagName.toLowerCase())); //Name + Type
 
     } else if (element.id != null) {
+        element.setHasDescriptiveName(true);
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.id) + ' ' + element.doc_element.tagName.toLowerCase())); //ID + Type
 
     } else {
@@ -303,6 +311,7 @@ function generateDescriptiveName(element) {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
             }
+            element.setHasDescriptiveName(true);
             sanitizedName = sanitizedName + ' ' + element.doc_element.tagName.toLowerCase();
             return capitalizeFirstLetter(camelize(sanitizedName));
         }
@@ -369,10 +378,16 @@ function camelize(name) {
  * @returns name - The unique descriptive name
  */
 function checkForUniqueName(elementObjects, name) {
+    let frequencyArray = [];
     for (let i = 0; i < elementObjects.length; i++) {
         if (elementObjects[i].descriptiveName.startsWith(name)) {
-
+            frequencyArray.push(elementObjects[i].descriptiveName);
         }
+    }
+    if (frequencyArray.length == 0){
+      return name;
+    } else {
+      return name + frequencyArray.length;
     }
 }
 
