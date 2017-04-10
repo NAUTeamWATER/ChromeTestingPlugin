@@ -277,7 +277,8 @@ function getBasicElements(elementArray) {
 function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
         let name = generateDescriptiveName(element);
-        //name = checkForUniqueName(elementObjects, name);
+
+        name = checkForUniqueName(elementObjects, name);
 
         // //ToDo - @Peter (Not sure exactly how you want to address this; here's one option)
         // if (isActuallyDescriptive(name)) {
@@ -311,6 +312,7 @@ function generateDescriptiveName(element) {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
             }
+            
             element.setHasDescriptiveName(true);
             sanitizedName = sanitizedName + ' ' + element.doc_element.tagName.toLowerCase();
             return capitalizeFirstLetter(camelize(sanitizedName));
@@ -378,10 +380,12 @@ function camelize(name) {
  * @returns name - The unique descriptive name
  */
 function checkForUniqueName(elementObjects, name) {
+    //console.log("Checking for unique.");
     let frequencyArray = [];
     for (let i = 0; i < elementObjects.length; i++) {
-        if (elementObjects[i].descriptiveName.startsWith(name)) {
-            frequencyArray.push(elementObjects[i].descriptiveName);
+        //console.log(elementObjects[i].descriptiveName);
+        if (elementObjects[i].descriptiveName != null && elementObjects[i].descriptiveName.startsWith(name)) {
+            frequencyArray.push(elementObjects[i].doc_element.descriptiveName);
         }
     }
     if (frequencyArray.length == 0){
