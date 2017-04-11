@@ -113,32 +113,57 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
-	//finds non null element data and makes a WebElement out of it
-	function FindNonNullValue(fileString, elementObject) {
-		if (elementObject.name != null){
-			fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObject.name  + '"));\n' ;
-		}
-		else if(elementObject.id != null){
-			fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '"));\n' ;
-		}
-		else if(elementObject.class != null){
-			fileString += '      WebElement webElement = webDriver.findElement(By.class("' + elementObject.class  + '"));\n' ;
-		}
-		else {
-			fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '"));\n' ;
-		}
-		return fileString;
-    }
+////// commented out code is for Users that aren't Choice Hotel employees 
+	
 	//adds testing functionality to webElement; Need to see if actually works with Selenium
 	function SetupTesting(fileString, elementObject) {
 		if (elementObject.type == 'Button'){
-			fileString += '      webElement.click();\n' ;
+			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
+			if (elementObject.name != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
+				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+			}
+			else if(elementObject.id != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
+				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+			}
+			else {
+				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
+				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+			}
+			//fileString += '      webElement.click();\n' ;
 		}
 		else if(elementObject.type == 'Link'){
-			fileString += '      webElement.click();\n' ;
+			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
+			if (elementObject.name != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
+				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+			}
+			else if(elementObject.id != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
+				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+			}
+			else {
+				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
+				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+			}
+			//fileString += '      webElement.click();\n' ;
 		}
 		else if(elementObject.type == 'Input'){
-			fileString += '      webElement.getAttribute("value");\n' ;
+			fileString += '   public void get'+elementObject.descriptiveName + '(){\n' ;		
+			if (elementObject.name != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
+				fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
+			}
+			else if(elementObject.id != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
+				fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
+			}
+			else {
+				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
+				fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
+			}
+			//fileString += '       webElement.getAttribute("value")';
 		}
 		else {
 			return fileString;
@@ -150,34 +175,49 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
 	fileString += 'public class SampleTestClass { \n\n';
-	fileString += '   public WebDriver webDriver;\n\n'
+	fileString += '   public PageDriver page;\n\n';
+	fileString += '   public SampleTestClass(PageDriver page) {\n';
+	fileString += '			this.page = page;\n';
+	fileString += '	  }\n';
+	//fileString += '   private WebDriver driver;';
     for (var i = 0; i < elementObjects.length; i++){
-		fileString += '/*' +elementObjects[i].fullHTML + '*/\n';
-		if (elementObjects[i].id != null){
-			fileString += '   public void '+elementObjects[i].type + elementObjects[i].id + '(){\n' ;
+		if (elementObjects[i].hasDescriptiveName == true){
+			fileString += '/*\n' +elementObjects[i].descriptiveName + '\n*/\n';
 		}
 		else{
-			fileString += '   public void '+elementObjects[i].type + elementObjects[i].class + '(){\n' ;
+			fileString += '/*\n' +elementObjects[i].fullHTML + '\n*/\n';
 		}
-		fileString += '\n';
-		fileString = FindNonNullValue(fileString, elementObjects[i]);
 		fileString = SetupTesting(fileString, elementObjects[i]);
 		fileString += '   }';
 		fileString += '\n\n';
 		if (elementObjects[i].type == 'Input'){
-			if (elementObjects[i].id != null){
-				fileString += '   public void set'+elementObjects[i].type + elementObjects[i].id + '(String value){\n' ;
+			fileString += '   public void set'+elementObjects[i].descriptiveName + '(String value){\n' ;
+			if (elementObjects[i].name != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObject[i].name  + '");\n';
+				fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
 			}
-			else{
-				fileString += '   public void set'+elementObjects[i].type + elementObjects[i].class + '(String value){\n' ;
+			else if(elementObjects[i].id != null){
+				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject[i].id  + '");\n';
+				fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
 			}
-			fileString += '\n';
-			fileString = FindNonNullValue(fileString, elementObjects[i]);
-			fileString += '      webElement.sendKeys(value);\n' ;
+			else {
+				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject[i].xpath  + '");\n';
+				fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
+			}
+			//fileString += '      webElement.sendKeys(value);\n' ;
 			fileString += '   }';
 			fileString += '\n\n';
 		}
     }
+	/*fileString += '    public void fill() {\n'
+	for (var i = 0; i < elementObjects.length; i++){	
+		if (elementObjects[i].type == 'Input'){
+			fileString += '      set'+elementObjects[i].descriptiveName + '(String value){\n' ;
+		}		
+	}
+	fileString += '   }\n';
+	*/
+///////// End of commented out code 
 	fileString += '}';
 
     var blob = new Blob([fileString], {
