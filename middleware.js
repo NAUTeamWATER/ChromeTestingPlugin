@@ -29,7 +29,8 @@ chrome.runtime.onMessage.addListener(
             let outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
-            outputArray[2] = JSON.stringify(elementObjectsFiltered); //Call function to pull all elements. I.E. = getPageElements();
+            outputArray[2] = elementsToBeParsedCheckboxes;
+            outputArray[3] = JSON.stringify(elementObjectsFiltered); //Call function to pull all elements. I.E. = getPageElements();
 
             sendBackgroundData(outputArray);
         }
@@ -312,7 +313,7 @@ function generateDescriptiveName(element) {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
             }
-            
+
             element.setHasDescriptiveName(true);
             sanitizedName = sanitizedName + ' ' + element.doc_element.tagName.toLowerCase();
             return capitalizeFirstLetter(camelize(sanitizedName));

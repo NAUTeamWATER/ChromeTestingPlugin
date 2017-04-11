@@ -1,6 +1,7 @@
 // The extension background enviroment as specified in the manifest.
 var outputFileHeader = [];
 var outputFileCheckboxes = [];
+var elementsToBeParsedCheckboxes = [];
 var elementObjects = [];
 
 chrome.runtime.onMessage.addListener(function(
@@ -10,7 +11,8 @@ chrome.runtime.onMessage.addListener(function(
     if (message.outputArray) {
         outputFileHeader = message.outputArray[0];
         outputFileCheckboxes = message.outputArray[1];
-        elementObjects = JSON.parse(message.outputArray[2]);
+        elementsToBeParsedCheckboxes = message.outputArray[2];
+        elementObjects = JSON.parse(message.outputArray[3]);
     }
 
     //Logic for downloading files.
@@ -39,7 +41,7 @@ chrome.runtime.onMessage.addListener(function(
 function createTextFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += 'Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp;
-    fileString += '\n'+ elementObjects.length + ' total elements retrieved' + (outputFileCheckboxes.length != 1 ? ', separated into ' + outputFileCheckboxes.length + ' categories.' : '. Only 1 category.');
+    fileString += '\n Retrieved '+ elementObjects.length + ' total elements from ' + elementsToBeParsedCheckboxes.length +' categories.';
     //For testing purposes:
     //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
     //console.log(outputFileCheckboxes[0]);
@@ -75,7 +77,8 @@ function createTextFile(outputFileHeader, elementObjects) {
 function createXMLFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '<?xml version="1.0" encoding="UTF-8"?>\n';
-    fileString += '<!--Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '-->';
+    fileString += '<!--Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.-->';
+    fileString += '<!-- Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.-->'
     fileString += '<output>\n';
     fileString += '<page_data>\n';
     fileString += '\t<page_url>' + outputFileHeader[0].pageURL + '</page_url>\n';
@@ -109,8 +112,8 @@ function createXMLFile(outputFileHeader, elementObjects) {
 function createSeleniumFile(outputFileHeader, elementObjects) {
     var fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
-	
-	//finds non null element data and makes a WebElement out of it   
+
+	//finds non null element data and makes a WebElement out of it
 	function FindNonNullValue(fileString, elementObject) {
 		if (elementObject.name != null){
 			fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObject.name  + '"));\n' ;
@@ -170,13 +173,13 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 			}
 			fileString += '\n';
 			fileString = FindNonNullValue(fileString, elementObjects[i]);
-			fileString += '      webElement.sendKeys(value);\n' ;			
+			fileString += '      webElement.sendKeys(value);\n' ;
 			fileString += '   }';
 			fileString += '\n\n';
 		}
     }
 	fileString += '}';
-	
+
     var blob = new Blob([fileString], {
         type: 'text/plain'
     });
