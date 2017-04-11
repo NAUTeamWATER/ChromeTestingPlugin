@@ -193,15 +193,15 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		if (elementObjects[i].type == 'Input'){
 			fileString += '   public void set'+elementObjects[i].descriptiveName + '(String value){\n' ;
 			if (elementObjects[i].name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObject[i].name  + '");\n';
+				//fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObjects[i].name  + '");\n';
 				fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
 			}
 			else if(elementObjects[i].id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject[i].id  + '");\n';
+				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObjects[i].id  + '");\n';
 				fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject[i].xpath  + '");\n';
+				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObjects[i].xpath  + '");\n';
 				fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
 			}
 			//fileString += '      webElement.sendKeys(value);\n' ;
