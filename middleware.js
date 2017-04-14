@@ -22,6 +22,12 @@ chrome.runtime.onMessage.addListener(
             //sort them
             let elementObjectsFiltered = sortElementObjects(elementObjects);
 
+            // for (let i = 0; i < elementObjects.length; i++) {
+            //     if (elementObjects[i].type == ElementTypeEnum.NGCLICK) {
+            //         console.log("HELOO"); //works here! //ToDo: Why doesn't it go all the way through? JSON erroring (encode or decode)? File parsing error?
+            //     }
+            // }
+
             //set the descriptive name
             generateAndSetDescriptiveName(elementObjectsFiltered);
 
@@ -60,7 +66,9 @@ function createOutputFileHeader() {
 ElementTypeEnum = Object.freeze({
     BUTTON: "Button",
     LINK: "Link",
-    INPUT: "Input"
+    INPUT: "Input",
+    ONCLICK: "JavaScript",
+    NGCLICK: "AngularJS"
 });
 
 
@@ -168,6 +176,8 @@ function filterElements(elementObjects, filters) {
     for (let i = 0; i < elementObjects.length; i++) {
         if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) {
             elementObjects[i].setParsed();
+            returnElements.push(elementObjects[i]);
+        } else if (elementObjects[i].isParsedAlready()) { //for angular and js elements
             returnElements.push(elementObjects[i]);
         }
     }
@@ -403,12 +413,28 @@ function checkForUniqueName(elementObjects, name) {
  * Will override isParsed for that element, making it notated as parsed.
  * Returns an updated element array.
  *
- * @param basicElementArray - the input element array
- * @param UIselection - the checkboxes selected
+ * @param elementObjects - the input element array
+ * @param UIselection - the checkboxes selected (ids specifically)
  */
-function addJSElements(basicElementArray, UIselection) {
-    //ToDo
-    return basicElementArray; //placeholder for testing, remove once it is actually working
+function addJSElements(elementObjects, UIselection) {
+
+    //ToDo: Test this one and Angular one as well
+
+    let returnElements = [];
+
+    for (let i = 0; i < elementObjects.length; i++) {
+        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("onclick") > -1)) {
+            if (elementObjects[i].fullhtml.indexOf("on-click") != -1) { //if not parsed already, onclick selected in UI, and element has on-click
+                elementObjects[i].setParsed();
+                elementObjects[i].type = ElementTypeEnum.ONCLICK;
+            }
+        }
+        returnElements.push(elementObjects[i]);
+    }
+
+    return returnElements;
+
+    // return basicElementArray; //placeholder for testing, remove once it is actually working
 }
 
 /**
@@ -417,12 +443,26 @@ function addJSElements(basicElementArray, UIselection) {
  * Will override isParsed for that element, making it notated as parsed.
  * Returns an updated element array.
  *
- * @param basicElementArray - the input element array
+ * @param elementObjects - the input element array
  * @param UIselection - the checkboxes selected
  */
-function getAngularElements(basicElementArray, UIselection) {
-    //ToDo
-    return basicElementArray; //placeholder for testing, remove once it is actually working
+function getAngularElements(elementObjects, UIselection) {
+
+    let returnElements = [];
+
+    for (let i = 0; i < elementObjects.length; i++) {
+        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("ngclick") > -1)) {
+            if (elementObjects[i].fullhtml.indexOf("ng-click") != -1) { //if not parsed already, ngclick selected in UI, and element has ng-click
+                elementObjects[i].setParsed();
+                elementObjects[i].type = ElementTypeEnum.NGCLICK;
+            }
+        }
+        returnElements.push(elementObjects[i]);
+    }
+
+    return returnElements;
+
+    // return basicElementArray; //placeholder for testing, remove once it is actually working
 }
 
 
