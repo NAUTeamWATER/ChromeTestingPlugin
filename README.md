@@ -1,6 +1,6 @@
 # Chrome Testing Plugin ![](https://img.shields.io/badge/Chrome_Store-Coming_Soon!-yellow.svg)
 
-Extension which scrapes HTML to generate files for use in automated testing suites.
+Extension which scrapes dynamic HTML to generate files for use in automated testing suites.
 
 Initially developed for Choice Hotels International :hotel:
 
