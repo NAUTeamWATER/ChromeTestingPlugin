@@ -1,13 +1,19 @@
-// The extension background enviroment as specified in the manifest.
-var outputFileHeader = [];
-var outputFileCheckboxes = [];
-var elementsToBeParsedCheckboxes = [];
-var elementObjects = [];
+/**
+ * Background takes in the information from the middleware (the parsed elements, plus info
+ * from the frontend UI), and creates the file outputs it should, formatting them as required.
+ */
 
+// Variables used to hold the most important pieces of data
+let outputFileHeader = []; //Info from the page parsed for the header of the output file
+let outputFileCheckboxes = []; //The file types selected in the UI
+let elementsToBeParsedCheckboxes = []; //The elements selected in the UI
+let elementObjects = []; //The parsed Elements themselves
+
+// The main code loop
 chrome.runtime.onMessage.addListener(function(
     message, sender, sendResponse) {
 
-    //Read and assign recieved data from the middleware.
+    //Read and assign received data from the middleware.
     if (message.outputArray) {
         outputFileHeader = message.outputArray[0];
         outputFileCheckboxes = message.outputArray[1];
@@ -15,20 +21,20 @@ chrome.runtime.onMessage.addListener(function(
         elementObjects = JSON.parse(message.outputArray[3]);
     }
 
-    //Logic for downloading files.
-    for (var i = 0; i < outputFileCheckboxes.length; i++) {
+    // Create the various types of complete files as needed, and download them with generated filenames
+    for (let i = 0; i < outputFileCheckboxes.length; i++) {
         switch (outputFileCheckboxes[i]) {
             case 'fileoutput_text':
-                createTextFile(outputFileHeader, elementObjects);
+                download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
             case 'fileoutput_xml':
-                createXMLFile(outputFileHeader, elementObjects);
+                download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
             case 'fileoutput_selenium':
-                createSeleniumFile(outputFileHeader, elementObjects);
+                download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
             case 'fileoutput_jasmine':
-                createJSObject(outputFileHeader, elementObjects);
+                download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
 
             default:
@@ -36,6 +42,9 @@ chrome.runtime.onMessage.addListener(function(
         }
     }
 });
+
+//=================================================== Text File ===========================================================
+//ToDo: Cleanup everything below here
 
 //function for testing purposes
 function createTextFile(outputFileHeader, elementObjects) {
@@ -67,11 +76,11 @@ function createTextFile(outputFileHeader, elementObjects) {
     });
     //console.log("Created Blob object.");
 
-    objectURL = URL.createObjectURL(blob);
-    console.log("Made link from Blob object.");
+    return URL.createObjectURL(blob);
 
-    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
 }
+
+//=================================================== XML File ===========================================================
 
 //Function to take the sorted element object array, parse through, and create an XML file and download it.
 function createXMLFile(outputFileHeader, elementObjects) {
@@ -103,10 +112,10 @@ function createXMLFile(outputFileHeader, elementObjects) {
     });
     //console.log("Created Blob object.");
 
-    objectURL = URL.createObjectURL(blob);
-    //console.log("Made link from Blob object.");
-    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
+    return URL.createObjectURL(blob);
 }
+
+//=================================================== Selenium (Java) File ===========================================================
 
 //TODO: Function to take sorted element object array, parse through, and create a Selenium compatible .java file and download it.
 function createSeleniumFile(outputFileHeader, elementObjects) {
@@ -225,11 +234,11 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
     });
     //console.log("Created Blob object.");
 
-    objectURL = URL.createObjectURL(blob);
-    //console.log("Made link from Blob object.");
-    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
+    return URL.createObjectURL(blob);
 
 }
+
+//=================================================== Jasmine (JavaScript Object) File ===========================================================
 
 //TODO: Function to take sorted element object array, parse through, and create a Jasmine and/or Protractor compatable .js file and download it.
 function createJSObject(outputFileHeader, elementObjects) {
@@ -241,10 +250,10 @@ function createJSObject(outputFileHeader, elementObjects) {
     });
     //console.log("Created Blob object.");
 
-    objectURL = URL.createObjectURL(blob);
-    //console.log("Made link from Blob object.");
-    download(objectURL, generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp));
+    return URL.createObjectURL(blob);
 }
+
+//=================================================== Helper Functions ===========================================================
 
 /**
  * Function that takes an objectURL and a string fileName and makes use of the ChromeAPI download to download the object as a file.
@@ -281,6 +290,15 @@ function generateFileName(pageTitle, timeStamp){
   fileName += timeString[4].split(':').join('_');
 
   return fileName;
+}
+
+/**
+ * Function which calls the more abstract generateFileName(pageTitle, timeStamp) with the values used nearly every time
+ *
+ * @returns {string} - filename
+ */
+function generateFileNameDefault(){
+    return generateFileName(outputFileHeader[0].pageTitle, outputFileHeader[0].timeStamp)
 }
 
 /**
