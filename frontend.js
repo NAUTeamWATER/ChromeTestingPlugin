@@ -37,7 +37,9 @@ checkPageButton.addEventListener('click', function() {
 
 }, false); //Button listener
 
-
+/**
+ * Function to add slider functionality for options.
+ */
 document.addEventListener('DOMContentLoaded', function() {
     //HTML JS for user interface//
 
@@ -66,8 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-/* Two functions that selects or unselects
-all of the checkboxes for the elements */
+/**
+ * Function to select all element attribute checkboxes.
+ */
 function selectAll() {
     var getInputs = document.getElementsByClassName("element_checkbox");
     for (var i = 0; i < getInputs.length; i++) {
@@ -75,6 +78,9 @@ function selectAll() {
     }
 }
 
+/**
+ * Function to deselect all element attribute checkboxes.
+ */
 document.getElementById('selectAll').addEventListener('click', selectAll);
 
 function unselectAll() {
@@ -87,15 +93,11 @@ function unselectAll() {
 document.getElementById('unselectAll').addEventListener('click', unselectAll);
 
 
-//Should pull all file types and elements meant to be parsed.
-function checkboxintoarray(input, output) {
-    for (var i = 0; i < input.length; i++) {
-        if (input[i].checked) {
-            output.push(input[i].id);
-        }
-    }
-}
-
+/**
+ * Function to pull all elements from the checkboxes and put them into a single array.
+ *
+ * @returns {array} - The array of arrays of output file and element attributes selected on the GUI.
+ */
 function checkboxHandler() {
     var outputFileCheckboxes = [];
     var elementsToBeParsedCheckboxes = [];
@@ -106,11 +108,24 @@ function checkboxHandler() {
 
     checkboxintoarray(getFileOutputs, outputFileCheckboxes);
     checkboxintoarray(getElementTypes, elementsToBeParsedCheckboxes);
-
     //Construct single array for Chrome messaging.
     checkboxData[0] = outputFileCheckboxes;
     checkboxData[1] = elementsToBeParsedCheckboxes;
 
     return checkboxData;
 
+}
+
+/**
+ * Helper function to pull all file output types and elements meant to be parsed.
+ *
+ * @param input - The input array of strings.
+ * @param output - The output array of strings.
+ */
+function checkboxintoarray(input, output) {
+    for (var i = 0; i < input.length; i++) {
+        if (input[i].checked) {
+            output.push(input[i].id);
+        }
+    }
 }

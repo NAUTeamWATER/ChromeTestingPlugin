@@ -16,12 +16,12 @@ We can add css styling and HTML elements.
 <body>
     <center>
         <h1> W.A.T.E.R </h1>
-        <h4> Automated Testing </h4>
+        <h4> Page Object Builder for Automated Testing </h4>
     </center>
     <h3> File Output: </h3>
 
     <div><input type="checkbox" checked="checked" id="fileoutput_text" class="output_checkbox"> Text(.txt)</div>
-    <div><input type="checkbox" id="fileoutput_xml" class="output_checkbox"> XML</div>
+    <div><input type="checkbox" id="fileoutput_xml" class="output_checkbox"> XML (.xml)</div>
     <div><input type="checkbox" id="fileoutput_selenium" class="output_checkbox"> Selenium(.java)</div>
     <div><input type="checkbox" id="fileoutput_jasmine" class="output_checkbox"> Jasmine(.js)</div><br>
     <div id="feedback"> </div>
@@ -42,21 +42,32 @@ We can add css styling and HTML elements.
                 <script type="text/javascript" src="frontend.js"></script>
             </center>
         </div>
-        <br>
-        <div><input type="checkbox" id="element_dropdown" class="element_checkbox"> Dropdown</div>
-        <div><input type="checkbox" id="element_radiobutton" class="element_checkbox"> Radio Button</div>
-        <div><input type="checkbox" id="element_textfield" class="element_checkbox"> Textfield</div>
-        <div><input type="checkbox" id="element_checkbox" class="element_checkbox"> Checkbox</div>
-        <div><input type="checkbox" id="element_hyperlinks" class="element_checkbox"> Hyperlinks</div>
-        <div><input type="checkbox" id="element_other" class="element_checkbox"> Other</div>
-        <br>
-        <br>
 
 
-    </div>
 
 
+        <div class="container">
+        <div class="left-col">
+          <h3>HTML:</h3>
+          <input type="checkbox" id="input" class="element_checkbox"> Input <br>
+          <input type="checkbox" id="button" class="element_checkbox"> Button<br>
+          <input type="checkbox" id="link" class="element_checkbox"> Hyperlink<br>
+
+        </div>
+
+        <div class="center-col">
+          <h3>Angular:</h3>
+          <input type="checkbox" id="ngclick" class="element_checkbox"> ng-click<br>
+
+        </div>
+        <div class="right-col">
+          <h3>JavaScript:</h3>
+          <input type="checkbox" id="onclick" class="element_checkbox"> onclick<br>
+
+
+        </div>
 
 </body>
+
 
 </html>
