@@ -5,4 +5,4 @@ Extension which scrapes dynamic HTML to generate files for use in automated test
 Initially developed for Choice Hotels International.
 Assumed use of ECMAScript6 (JS version).
 
-![](https://github.com/NAUTeamWATER/ChromeTestingPlugin/blob/32978ff68c7cbd73d661db47d9f89f7b3d266978/water-icon48.png "Created by Team WATER")
+![](https://github.com/NAUTeamWATER/ChromeTestingPlugin/blob/32978ff68c7cbd73d661db47d9f89f7b3d266978/icon.png "Created by Team WATER")
