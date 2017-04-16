@@ -23,80 +23,98 @@ chrome.runtime.onMessage.addListener(function(
 
     // Create the various types of complete files as needed, and download them with generated filenames
     for (let i = 0; i < outputFileCheckboxes.length; i++) {
+
         switch (outputFileCheckboxes[i]) {
-            case 'fileoutput_text':
+
+            case 'fileoutput_text': //Text file
                 download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
-            case 'fileoutput_xml':
+            case 'fileoutput_xml': //XML file
                 download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
-            case 'fileoutput_selenium':
+            case 'fileoutput_selenium': //Selenium (Java) file
                 download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
-            case 'fileoutput_jasmine':
+            case 'fileoutput_jasmine': //Jasmine (JS) file
                 download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault());
                 break;
 
             default:
-                console.log('Invalid file output.');
+                console.log('Invalid file output.'); //Should theoretically be unreachable
+
         }
     }
 });
 
-//=================================================== Text File ===========================================================
-//ToDo: Cleanup everything below here
 
-//function for testing purposes
+//=================================================== Text File ===========================================================
+
+
+/**
+ * Create a text file containing the element data.
+ * Initially created primarily for internal testing purposes, but it can be used for whatever is desired.
+ */
 function createTextFile(outputFileHeader, elementObjects) {
-    var fileString = '';
+
+    // Create a string to hold the data in the file
+    let fileString = '';
     fileString += 'Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp;
     fileString += '\n Retrieved '+ elementObjects.length + ' total elements from ' + elementsToBeParsedCheckboxes.length +' categories.'; //ToDo: x out of y selected categories
-    //For testing purposes:
-    //console.log("Length of checkbox array: " + outputFileCheckboxes.length);
-    //console.log(outputFileCheckboxes[0]);
-
-    //Add elements to file
     fileString += "\n";
 
+    // Function to add elements to file
     function addElementsToString(fileString, elementObject) {
-        fileString += JSON.stringify(elementObject, undefined, 2);
-        fileString += "\n---\n"; //append to file
+        fileString += JSON.stringify(elementObject, undefined, 2); //Deserialize and append to fileString
+        fileString += "\n---\n"; //Break up elements visually
         return fileString;
     }
 
-    for (var i = 0; i < elementObjects.length; i++) {
+    // Add the elements to the fileString
+    for (let i = 0; i < elementObjects.length; i++) {
         fileString = addElementsToString(fileString, elementObjects[i]);
     }
 
-    // Snippet I want to keep and research later(Max)
-    // var a = DOMParser(); var xml = "<node></node>"; xml = a.parseFromString(xml, "application/xml" ); xml.getElementsByTagName("node") + ""; //"[object HTMLCollection]"
-
-    var blob = new Blob([fileString], {
+    // Create a blob object to store the new file
+    const blob = new Blob([fileString], {
         type: 'text/plain'
     });
-    //console.log("Created Blob object.");
 
+    // Return the URL of the blob so that it can be downloaded
     return URL.createObjectURL(blob);
 
 }
 
+
 //=================================================== XML File ===========================================================
 
-//Function to take the sorted element object array, parse through, and create an XML file and download it.
+
+/**
+ * Create an XML file containing the element data.
+ * Useful as a generalized, but clearly structured, file type.
+ */
 function createXMLFile(outputFileHeader, elementObjects) {
-    var fileString = '';
+
+    // Create a string to hold the data in the file
+    let fileString = '';
+
+    // Header information
     fileString += '<?xml version="1.0" encoding="UTF-8"?>\n';
     fileString += '<!--Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.-->';
-    fileString += '<!-- Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.-->'
+    fileString += '<!-- Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.-->';
+
+    // Page data
     fileString += '<output>\n';
     fileString += '<page_data>\n';
     fileString += '\t<page_url>' + outputFileHeader[0].pageURL + '</page_url>\n';
     fileString += '\t<timestamp>' + outputFileHeader[0].timeStamp + '</timestamp>\n';
     fileString += '\t<page_title>' + sanitizeString(outputFileHeader[0].pageTitle) + '</page_title>\n';
     fileString += '</page_data>\n';
+
+    // Element data
     fileString += '<elements>\n';
-    //Loop through elements here...
-    for (var i = 0; i < elementObjects.length; i++){
+
+    //Loop through elements here, adding their info to the fileString in the appropriate tags
+    for (let i = 0; i < elementObjects.length; i++){
       fileString += '\t<element>\n';
       fileString += '\t\t<element_type>' + elementObjects[i].type + '</element_type>\n';
       fileString += '\t\t<element_id>' + elementObjects[i].id + '</element_id>\n';
@@ -104,22 +122,27 @@ function createXMLFile(outputFileHeader, elementObjects) {
       fileString += '\t\t<element_xpath>' + elementObjects[i].xpath + '</element_xpath>\n';
       fileString += '\t</element>\n';
     }
+
+    // Close tags
     fileString += '</elements>\n';
     fileString += '</output>\n';
 
-    var blob = new Blob([fileString], {
+    // Create a blob object to store the new file
+    const blob = new Blob([fileString], {
         type: 'text/plain'
     });
-    //console.log("Created Blob object.");
 
+    // Return the URL of the blob so that it can be downloaded
     return URL.createObjectURL(blob);
 }
 
 //=================================================== Selenium (Java) File ===========================================================
 
+//ToDo: Cleanup everything below here
+
 //TODO: Function to take sorted element object array, parse through, and create a Selenium compatible .java file and download it.
 function createSeleniumFile(outputFileHeader, elementObjects) {
-    var fileString = '';
+    let fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
 ////// commented out code is for Users that aren't Choice Hotel employees 
@@ -189,7 +212,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += '			this.page = page;\n';
 	fileString += '	  }\n';
 	//fileString += '   private WebDriver driver;';
-    for (var i = 0; i < elementObjects.length; i++){
+    for (let i = 0; i < elementObjects.length; i++){
 		if (elementObjects[i].hasDescriptiveName == true){
 			fileString += '/*\n' +elementObjects[i].descriptiveName + '\n*/\n';
 		}
@@ -229,7 +252,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 ///////// End of commented out code 
 	fileString += '}';
 
-    var blob = new Blob([fileString], {
+    const blob = new Blob([fileString], {
         type: 'text/plain'
     });
     //console.log("Created Blob object.");
@@ -242,10 +265,10 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 
 //TODO: Function to take sorted element object array, parse through, and create a Jasmine and/or Protractor compatable .js file and download it.
 function createJSObject(outputFileHeader, elementObjects) {
-    var fileString = '';
+    let fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
-    var blob = new Blob([fileString], {
+    const blob = new Blob([fileString], {
         type: 'text/plain'
     });
     //console.log("Created Blob object.");
@@ -277,13 +300,13 @@ function download(objectURL, fileName) {
  * @returns {string} - The name that the file should be.
  */
 function generateFileName(pageTitle, timeStamp){
-  var fileName = sanitizeString(pageTitle).split(' ').join('_');
+  let fileName = sanitizeString(pageTitle).split(' ').join('_');
 
   if (fileName === ""){
     fileName = 'UntitledPage';
   }
   //Convert timestamp from: Mon Mar 27 2017 23:58:30 GMT-0700 (MST)
-  var timeString = timeStamp.split(' ', 5);
+  const timeString = timeStamp.split(' ', 5);
   fileName += '_'+timeString[1]+'_';
   fileName += timeString[2]+'_';
   fileName += timeString[3]+'_';
@@ -309,7 +332,7 @@ function generateFileNameDefault(){
  * @returns {string} - The sanitized string.
  */
 function sanitizeString(string){
-  var sanitizedString = string.replace(/[^a-z\d\s]+/gi, "");
+  let sanitizedString = string.replace(/[^a-z\d\s]+/gi, "");
   sanitizedString = sanitizedString.replace(/\s\s+/g, ' ');
 
   return sanitizedString;
