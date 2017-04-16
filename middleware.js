@@ -8,14 +8,13 @@
 //===================================== Inner Helper Data Structures =====================================
 
 /**
- * Wrapper class for DOM elements that contains a UUID (unique ID), as well as fields and helper methods.
+ * Wrapper class for DOM elements, with helper methods (primarily toJSON).
  */
 class Element {
 
     //no constructor overloading, hence the setData() method
-    constructor(doc_element, uniqueID) {
+    constructor(doc_element) {
         this.doc_element = doc_element; //HTMLCollection
-        this.uniqueID = uniqueID; //ToDo: Delete?
         this.parsed = false;
         this.elemEnumType = null;
         this.fullhtml = null;
@@ -188,21 +187,14 @@ function retrieveElements() {
     let elements = document.getElementsByTagName("*");
     console.log("Found " + elements.length + " elements.");
 
+    //ToDo: More efficient wrap + array copy?
     // Array to hold all the Element objects
     let elementArray = [];
-
-    //random IDs //ToDo: Remove
-    let uuid = function() {
-        let fourChars = function() {
-            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1).toUpperCase();
-        };
-        return (fourChars() + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + "-" + fourChars() + fourChars() + fourChars());
-    };
 
     // Loop through all elements
     for (let i = 0; i < elements.length; i++) {
         // Put in wrapper class and add to array
-        elementArray.push(new Element(elements[i], uuid()));
+        elementArray.push(new Element(elements[i]));
     }
 
     // Return all wrapped Elements in an array
