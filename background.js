@@ -152,50 +152,53 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		if (elementObject.type == 'Button'){
 			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '      webElement.click();\n' ;
+			fileString += '      JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
+			fileString += '      js.executeScript("arguments[0].click();", webElement);\n' ;
+
 		}
 		else if(elementObject.type == 'Link'){
 			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '      webElement.click();\n' ;
+			fileString += '      webElement.click();\n' ;
+
 		}
 		else if(elementObject.type == 'Input'){
-			fileString += '   public void get'+elementObject.descriptiveName + '(){\n' ;		
+			fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '       webElement.getAttribute("value")';
+			fileString += '       return webElement.getAttribute("value");';
 		}
 		else {
 			return fileString;
@@ -207,11 +210,13 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
 	fileString += 'public class SampleTestClass { \n\n';
-	fileString += '   public PageDriver page;\n\n';
-	fileString += '   public SampleTestClass(PageDriver page) {\n';
-	fileString += '			this.page = page;\n';
-	fileString += '	  }\n';
-	//fileString += '   private WebDriver driver;';
+	
+	//fileString += '   public PageDriver page;\n\n';
+	//fileString += '   public SampleTestClass(PageDriver page) {\n';
+	//fileString += '			this.page = page;\n';
+	//fileString += '	  }\n';
+	fileString += '   private WebDriver driver = new ChromeDriver();';
+	
     for (let i = 0; i < elementObjects.length; i++){
 		if (elementObjects[i].hasDescriptiveName == true){
 			fileString += '/*\n' +elementObjects[i].descriptiveName + '\n*/\n';
@@ -225,30 +230,24 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		if (elementObjects[i].type == 'Input'){
 			fileString += '   public void set'+elementObjects[i].descriptiveName + '(String value){\n' ;
 			if (elementObjects[i].name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObjects[i].name  + '");\n';
-				fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("' + elementObjects[i].name  + '"));\n';
+				//fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
 			}
 			else if(elementObjects[i].id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObjects[i].id  + '");\n';
-				fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObjects[i].id  + '"));\n';
+				//fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObjects[i].xpath  + '");\n';
-				fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObjects[i].xpath  + '"));\n';
+				//fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
 			}
-			//fileString += '      webElement.sendKeys(value);\n' ;
+			fileString += '      webElement.clear();\n' ;
+			fileString += '      webElement.sendKeys(value);\n' ;
 			fileString += '   }';
 			fileString += '\n\n';
 		}
     }
-	/*fileString += '    public void fill() {\n'
-	for (var i = 0; i < elementObjects.length; i++){	
-		if (elementObjects[i].type == 'Input'){
-			fileString += '      set'+elementObjects[i].descriptiveName + '(String value){\n' ;
-		}		
-	}
-	fileString += '   }\n';
-	*/
+
 ///////// End of commented out code 
 	fileString += '}';
 
