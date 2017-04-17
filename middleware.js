@@ -61,7 +61,7 @@ class Element {
         return {
             'hasDescriptiveName': this.hasDescriptiveName,
             'descriptiveName': this.descriptiveName,
-            'fullHTML': this.fullhtml,
+            // 'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
             'class': this.clazz,
             // 'Tag': this.tag,
@@ -106,8 +106,8 @@ ElementTypeEnum = Object.freeze({
     BUTTON: "Button",
     LINK: "Link",
     INPUT: "Input",
-    ONCLICK: "JavaScript",
-    NGCLICK: "AngularJS"
+    ONCLICK: "JavaScript (on-click)",
+    NGCLICK: "Angular (ng-click)"
 });
 
 
@@ -132,23 +132,17 @@ chrome.runtime.onMessage.addListener(
             elementObjects = parseElements(retrieveElements(), elementsToBeParsedCheckboxes);
 
             // Sort them
-            let elementObjectsFiltered = sortElementObjects(elementObjects);
-
-            // for (let i = 0; i < elementObjects.length; i++) {
-            //     if (elementObjects[i].type == ElementTypeEnum.NGCLICK) {
-            //         console.log("HELOO"); //works here! //ToDo: Why doesn't it go all the way through? JSON erroring (encode or decode)? File parsing error?
-            //     }
-            // }
+            let elementObjectsSorted = sortElementObjects(elementObjects);
 
             // Set the descriptive names
-            generateAndSetDescriptiveName(elementObjectsFiltered);
+            generateAndSetDescriptiveName(elementObjectsSorted);
 
             // Construct data array to send to backend.
             let outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
             outputArray[2] = elementsToBeParsedCheckboxes; //Pass element checkboxes data through.
-            outputArray[3] = JSON.stringify(elementObjectsFiltered); //Call function to serialize all elements into JSON
+            outputArray[3] = JSON.stringify(elementObjectsSorted); //Call function to serialize all elements into JSON
 
             // Send the formatted data to the backend
             sendBackgroundData(outputArray);
@@ -157,7 +151,7 @@ chrome.runtime.onMessage.addListener(
 
 //ToDo: Remove this function, consolidate to above
 function sendBackgroundData(outputArray) {
-    //Send the output data to the background script enviroment though Chrome API message.
+    //Send the output data to the background script environment though Chrome API message.
 
     chrome.runtime.sendMessage({
         outputArray: outputArray
@@ -261,7 +255,7 @@ function addJSElements(elementObjects, UIselection) {
         if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("onclick") > -1)) {
             if (elementObjects[i].fullhtml.indexOf("on-click") != -1) { //if not parsed already, onclick selected in UI, and element has on-click
                 elementObjects[i].setParsed();
-                elementObjects[i].type = ElementTypeEnum.ONCLICK;
+                elementObjects[i].elemEnumType = ElementTypeEnum.ONCLICK;
             }
         }
         returnElements.push(elementObjects[i]);
@@ -289,7 +283,7 @@ function getAngularElements(elementObjects, UIselection) {
         if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("ngclick") > -1)) {
             if (elementObjects[i].fullhtml.indexOf("ng-click") != -1) { //if not parsed already, ngclick selected in UI, and element has ng-click
                 elementObjects[i].setParsed();
-                elementObjects[i].type = ElementTypeEnum.NGCLICK;
+                elementObjects[i].elemEnumType = ElementTypeEnum.NGCLICK;
             }
         }
         returnElements.push(elementObjects[i]);
@@ -313,7 +307,7 @@ function filterElements(elementObjects, filters) {
         if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) {
             elementObjects[i].setParsed();
             returnElements.push(elementObjects[i]);
-        } else if (elementObjects[i].isParsedAlready()) { //for angular and js elements
+        } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //for angular and js elements
             returnElements.push(elementObjects[i]);
         }
     }
@@ -394,7 +388,7 @@ function generateDescriptiveName(element) {
 
     } else {
         if (element.doc_element.textContent != '') {
-            var sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
+            let sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
             if (sanitizedName.trim() == '') {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
@@ -427,7 +421,7 @@ function getElemTypeAsDescriptiveName(element) {
  * @returns {string} - Sanitized descriptive name
  */
 function sanitizeDescriptiveName(name) {
-    var sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
+    let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
     return sanitizedName.trim();
 }
@@ -488,20 +482,8 @@ function checkForUniqueName(elementObjects, name) {
 
 // Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
 function sortElementObjects(elementArray) {
-    var sortedarray = [];
-    var length = 0;
-    for (var i = 0; i < elementsToBeParsedCheckboxes.length; i++) {
-        var word = String(elementsToBeParsedCheckboxes[i]);
-        for (var j = 0; j < elementArray.length; j++) {
-            var type = String(elementArray[j].elemEnumType);
-            type = type.toLowerCase();
-            if (type == word) {
-                sortedarray[length] = elementArray[j];
-                length += 1;
-            }
-        }
-    }
-    return sortedarray;
+    elementArray.sort((a, b) => a.elemEnumType.localeCompare(b.elemEnumType)); //just compare the elemEnumType by alphabetical order
+    return elementArray;
 }
 
 
@@ -515,20 +497,20 @@ function getElementXPath(element) {
         return '//*[@id="' + element.id + '"]';
     else
         return getElementTreeXPath(element);
-};
+}
 
 function getElementTreeXPath(element) {
-    var paths = [];
+    let paths = [];
 
     for (; element && element.nodeType == 1; element = element.parentNode) {
-        var index = 0;
+        let index = 0;
 
         if (element && element.id) {
             paths.splice(0, 0, '/*[@id="' + element.id + '"]');
             break;
         }
 
-        for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
+        for (let sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
             // Ignore document type declaration.
             if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
                 continue;
@@ -537,8 +519,8 @@ function getElementTreeXPath(element) {
                 ++index;
         }
 
-        var tagName = element.nodeName.toLowerCase();
-        var pathIndex = (index ? "[" + (index + 1) + "]" : "");
+        let tagName = element.nodeName.toLowerCase();
+        let pathIndex = (index ? "[" + (index + 1) + "]" : "");
         paths.splice(0, 0, tagName + pathIndex);
     }
 
