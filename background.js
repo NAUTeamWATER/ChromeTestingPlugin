@@ -27,16 +27,16 @@ chrome.runtime.onMessage.addListener(function(
         switch (outputFileCheckboxes[i]) {
 
             case 'fileoutput_text': //Text file
-                download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault()+".txt");
                 break;
             case 'fileoutput_xml': //XML file
-                download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault()+".xml");
                 break;
             case 'fileoutput_selenium': //Selenium (Java) file
-                download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault()+".java");
                 break;
             case 'fileoutput_jasmine': //Jasmine (JS) file
-                download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault()+".js");
                 break;
 
             default:
