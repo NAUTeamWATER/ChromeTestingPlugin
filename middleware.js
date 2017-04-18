@@ -186,10 +186,14 @@ function retrieveElements() {
 function parseElements(elementArray, UIselection) {
 
     let basicElementArray = getBasicElements(elementArray); //button, links, input, xpath, etc; intuitive UI things that will ALWAYS be used
+    basicElementArray = filterElements(basicElementArray, UIselection, true); //Filter initially, assigning isParsed where relevant, so advanced ones don't override their type (e.g. buttons are higher priority than ng-click)
+
     let basicAndJSElements = addJSElements(basicElementArray, UIselection); //add JS element data, e.g. on-click
     let basicJSAndAngularElements = getAngularElements(basicAndJSElements, UIselection); //add the angular element data, e.g. ng-click
+
     // Here is where you could add things such as jQuery() or other future expansion categorical data
-    return filterElements(basicJSAndAngularElements, UIselection); //return the filtered list (culls out elements not included in the UI)
+
+    return filterElements(basicJSAndAngularElements, UIselection, false); //return the filtered list (culls out elements not included in the UI)
 }
 
 
@@ -278,9 +282,10 @@ function getAngularElements(elementObjects, UIselection) {
  *
  * @param elementObjects - all HTML elements on the page, already wrapped in the Element class
  * @param filters - the checkboxes, specifically the ids of them
+ * @param initial - for the initial parsing of elements; returns all elements (but still assigns isParsed() where needed)
  * @returns {Array} - Element objects, with .parsed=True and .enumType={some ElementTypeEnum} assigned
  */
-function filterElements(elementObjects, filters) {
+function filterElements(elementObjects, filters, initial) {
 
     // Return array to hold filtered elements
     let returnElements = [];
@@ -298,6 +303,9 @@ function filterElements(elementObjects, filters) {
           //Run through elements and do not print any HTML that is too long.
           elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
           returnElements.push(elementObjects[i]);
+        // Otherwise, if initial runthrough, add *all* elements regardless of parsing
+        } else if (initial) {
+            returnElements.push(elementObjects[i])
         }
     }
 
