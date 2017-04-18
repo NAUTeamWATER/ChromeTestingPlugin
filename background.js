@@ -262,16 +262,74 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 
 //=================================================== Jasmine (JavaScript Object) File ===========================================================
 
-//TODO: Function to take sorted element object array, parse through, and create a Jasmine and/or Protractor compatable .js file and download it.
-function createJSObject(outputFileHeader, elementObjects) {
-    let fileString = '';
-    fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
+//======= JS Helper Functions ==========
+
+// Useful variables
+const INDENT = "    "; //4 spaces
+const DOUBLE_INDENT = INDENT+INDENT;
+const CLASS_NAME = "ParsedDOMElement"; //Name of the class in the file
+let CLASS_PARAMS = []; //The parameters used in this class
+
+// Create the JavaScript class to hold the parsed DOM elements
+function createClass(elementObjects) {
+
+    // String to hold class data
+    let fileString = "\n\n";
+
+    fileString += "class "+CLASS_NAME+" { \n";
+
+    // Arrow operator for simple anonymous function to add keys of JSON object to array
+    let classParamSetup = x => { for (let prop in elementObjects[0]) { x.push(prop); } }; //<- Key, Value is elementObject[prop]
+    classParamSetup(CLASS_PARAMS);
+
+    // Create the constructor
+    fileString += "\n"+INDENT+"constructor(";
+    for (let i = 0; i < CLASS_PARAMS.length; i++) {
+        if (i == CLASS_PARAMS.length - 1) { //Last item
+            fileString += CLASS_PARAMS[i]+ ") {\n"; //Finish constructor
+        } else {
+            fileString += CLASS_PARAMS[i]+", "; //Trailing comma
+        }
+    }
+
+    fileString += "\n"+INDENT+"} //End constructor\n";
+
+    fileString += "\n} //End class";
+
+    return fileString;
+}
+
+function instantiateObjects(elementObjects) {
+    // String to hold object instantiation data
+    let fileString = "";
+
+    return fileString;
+
+}
+
+
+//======= Main JS Function =============
+
+function createJSObject(outputFileHeader, elementObjects) {
+
+    // Create a string to hold the data in the file
+    let fileString = '';
+
+    // Header info
+    fileString += '// Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.';
+    fileString += '// Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.';
+
+    // Page data
+    fileString += createClass(elementObjects);
+    fileString += instantiateObjects(elementObjects);
+
+    // Create a blob object to store the new file
     const blob = new Blob([fileString], {
         type: 'text/plain'
     });
-    //console.log("Created Blob object.");
 
+    // Return the URL of the blob so that it can be downloaded
     return URL.createObjectURL(blob);
 }
 
