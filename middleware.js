@@ -39,19 +39,6 @@ class Element {
         this.xpath = xPath;
     }
 
-    //ToDo: Delete setters, just set directly
-    setElemEnumType(enumType) {
-        this.elemEnumType = enumType;
-    }
-
-    setDescriptiveName(name) {
-        this.descriptiveName = name;
-    }
-
-    setHasDescriptiveName(bool) {
-        this.hasDescriptiveName = bool;
-    }
-
     /**
      * Helper method for serializing the data to send to the backend.
      *
@@ -61,9 +48,9 @@ class Element {
         return {
             'hasDescriptiveName': this.hasDescriptiveName,
             'descriptiveName': this.descriptiveName,
-            'fullHTML': this.fullhtml,
+            // 'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
-            'class': this.clazz,
+            'clazz': this.clazz,
             // 'Tag': this.tag,
             'id': this.id,
             'name': this.name,
@@ -106,8 +93,8 @@ ElementTypeEnum = Object.freeze({
     BUTTON: "Button",
     LINK: "Link",
     INPUT: "Input",
-    ONCLICK: "JavaScript",
-    NGCLICK: "AngularJS"
+    ONCLICK: "JavaScript (on-click)", //ToDo: What to name it exactly?
+    NGCLICK: "Angular (ng-click)"
 });
 
 
@@ -132,37 +119,25 @@ chrome.runtime.onMessage.addListener(
             elementObjects = parseElements(retrieveElements(), elementsToBeParsedCheckboxes);
 
             // Sort them
-            let elementObjectsFiltered = sortElementObjects(elementObjects);
-
-            // for (let i = 0; i < elementObjects.length; i++) {
-            //     if (elementObjects[i].type == ElementTypeEnum.NGCLICK) {
-            //         console.log("HELOO"); //works here! //ToDo: Why doesn't it go all the way through? JSON erroring (encode or decode)? File parsing error?
-            //     }
-            // }
+            let elementObjectsSorted = sortElementObjects(elementObjects);
 
             // Set the descriptive names
-            generateAndSetDescriptiveName(elementObjectsFiltered);
+            generateAndSetDescriptiveName(elementObjectsSorted);
 
             // Construct data array to send to backend.
             let outputArray = [];
             outputArray[0] = createOutputFileHeader(); //Create the output file header information.
             outputArray[1] = message.checkboxData[0]; //Pass output file type checkboxes through.
             outputArray[2] = elementsToBeParsedCheckboxes; //Pass element checkboxes data through.
-            outputArray[3] = JSON.stringify(elementObjectsFiltered); //Call function to serialize all elements into JSON
+            outputArray[3] = JSON.stringify(elementObjectsSorted); //Call function to serialize all elements into JSON
 
             // Send the formatted data to the backend
-            sendBackgroundData(outputArray);
+            chrome.runtime.sendMessage({
+                outputArray: outputArray
+            });
         }
-    });
-
-//ToDo: Remove this function, consolidate to above
-function sendBackgroundData(outputArray) {
-    //Send the output data to the background script enviroment though Chrome API message.
-
-    chrome.runtime.sendMessage({
-        outputArray: outputArray
-    });
-}
+    }
+);
 
 //Function that returns a basic json object representing the page data.
 function createOutputFileHeader() {
@@ -187,7 +162,6 @@ function retrieveElements() {
     let elements = document.getElementsByTagName("*");
     console.log("Found " + elements.length + " elements.");
 
-    //ToDo: More efficient wrap + array copy?
     // Array to hold all the Element objects
     let elementArray = [];
 
@@ -221,8 +195,6 @@ function parseElements(elementArray, UIselection) {
 
 //=================================================== Filter Elements ===========================================================
 
-//ToDo: Comments in code
-
 /**
  * Gets basic information from each element.
  * Specifically: outerHTML, class, tagName, name, and id.
@@ -231,6 +203,7 @@ function parseElements(elementArray, UIselection) {
  * @returns {*} - the element array passed in
  */
 function getBasicElements(elementArray) {
+    //For each element set basic data
     elementArray.forEach(function(element) {
         element.setData(element.doc_element.outerHTML,
             element.doc_element.getAttribute("class"),
@@ -253,23 +226,22 @@ function getBasicElements(elementArray) {
  */
 function addJSElements(elementObjects, UIselection) {
 
-    //ToDo: Test this one and Angular one as well
-
+    // Array to hold the returned elements
     let returnElements = [];
 
+    // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("onclick") > -1)) {
-            if (elementObjects[i].fullhtml.indexOf("on-click") != -1) { //if not parsed already, onclick selected in UI, and element has on-click
-                elementObjects[i].setParsed();
-                elementObjects[i].type = ElementTypeEnum.ONCLICK;
+        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("onclick") > -1)) { //If on-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.indexOf("on-click") != -1) { //If element has on-click ToDo: refine?
+                elementObjects[i].setParsed(); //Set parsed
+                elementObjects[i].elemEnumType = ElementTypeEnum.ONCLICK; //Set elemEnumType
             }
         }
-        returnElements.push(elementObjects[i]);
+        returnElements.push(elementObjects[i]); //Regardless of if new data is set or not, add it to the return array
     }
 
+    // Return array with all elements, with JS ones having more data
     return returnElements;
-
-    // return basicElementArray; //placeholder for testing, remove once it is actually working
 }
 
 /**
@@ -283,40 +255,49 @@ function addJSElements(elementObjects, UIselection) {
  */
 function getAngularElements(elementObjects, UIselection) {
 
+    // Array to hold the returned elements
     let returnElements = [];
 
+    // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("ngclick") > -1)) {
-            if (elementObjects[i].fullhtml.indexOf("ng-click") != -1) { //if not parsed already, ngclick selected in UI, and element has ng-click
-                elementObjects[i].setParsed();
-                elementObjects[i].type = ElementTypeEnum.NGCLICK;
+        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("ngclick") > -1)) { //If ng-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.indexOf("ng-click") != -1) { //If element has ng-click ToDo: refine?
+                elementObjects[i].setParsed(); //Set parsed
+                elementObjects[i].elemEnumType = ElementTypeEnum.NGCLICK; //Set elemEnumType
             }
         }
-        returnElements.push(elementObjects[i]);
+        returnElements.push(elementObjects[i]); //Regardless of if new data is set or not, add it to the return array
     }
 
+    // Return array with all elements, with JS ones having more data
     return returnElements;
-
-    // return basicElementArray; //placeholder for testing, remove once it is actually working
 }
 
 /**
- * Simple function to take in all elements, the filterable checkboxes clicked, and returns the array of Element objects that are of the correct types.
+ * Function to take in all elements, the filterable checkboxes clicked, and returns the array of Element objects that are of the correct types.
  *
  * @param elementObjects - all HTML elements on the page, already wrapped in the Element class
  * @param filters - the checkboxes, specifically the ids of them
  * @returns {Array} - Element objects, with .parsed=True and .enumType={some ElementTypeEnum} assigned
  */
 function filterElements(elementObjects, filters) {
+
+    // Return array to hold filtered elements
     let returnElements = [];
+
+    // For each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) {
+        // If it is not parsed, check if it is a valid element, determined by the UI selection (which assigns data to it if so)
+        if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) { //For basic elements
             elementObjects[i].setParsed();
             returnElements.push(elementObjects[i]);
-        } else if (elementObjects[i].isParsedAlready()) { //for angular and js elements
+        // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
+        } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //For angular and js elements
             returnElements.push(elementObjects[i]);
         }
     }
+
+    // Return the new array of carefully selected elements
     return returnElements;
 }
 
@@ -329,9 +310,14 @@ function filterElements(elementObjects, filters) {
  * @returns {boolean} - True if the element should be included, false otherwise
  */
 function isInSelection(element, filters) {
+
+    // For each elements
     for (let i = 0; i < filters.length; i++) {
+
+        // The filter selected in the UI to check against
         let currFilter = filters[i];
-        //simple case, check the tagName (e.g. <button ...></button>
+
+        // Simple case, check the tagName (e.g. <button ...></button> against the UI one selected
         if (element.doc_element.tagName == currFilter.toUpperCase()) {
             let enumType;
             switch (element.doc_element.tagName) {
@@ -344,11 +330,18 @@ function isInSelection(element, filters) {
                 case "INPUT":
                     enumType = ElementTypeEnum.INPUT;
                     break;
+                default: //Error if not one of the elements desired (should theoretically be unreachable due to above equality check for UI currFilter)
+                    throw "Invalid element tag: "+element.doc_element.tagName+" is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
             }
-            element.setElemEnumType(enumType);
+
+            // Assign it if it exists
+            element.elemEnumType = enumType;
+            // Return success
             return true;
         }
     }
+
+    //Return failure
     return false;
 }
 
@@ -372,7 +365,7 @@ function generateAndSetDescriptiveName(elementObjects) {
         //     element.descriptiveName = true;
         // }
 
-        element.setDescriptiveName(name);
+        element.descriptiveName = name;
     });
 }
 
@@ -385,22 +378,22 @@ function generateAndSetDescriptiveName(elementObjects) {
  */
 function generateDescriptiveName(element) {
     if (element.name != null) {
-        element.setHasDescriptiveName(true);
+        element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.name) + ' ' + element.doc_element.tagName.toLowerCase())); //Name + Type
 
     } else if (element.id != null) {
-        element.setHasDescriptiveName(true);
+        element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.id) + ' ' + element.doc_element.tagName.toLowerCase())); //ID + Type
 
     } else {
         if (element.doc_element.textContent != '') {
-            var sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
+            let sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
             if (sanitizedName.trim() == '') {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
             }
 
-            element.setHasDescriptiveName(true);
+            element.hasDescriptiveName = true;
             sanitizedName = sanitizedName + ' ' + element.doc_element.tagName.toLowerCase();
             return capitalizeFirstLetter(camelize(sanitizedName));
         }
@@ -427,7 +420,7 @@ function getElemTypeAsDescriptiveName(element) {
  * @returns {string} - Sanitized descriptive name
  */
 function sanitizeDescriptiveName(name) {
-    var sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
+    let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
     return sanitizedName.trim();
 }
@@ -488,20 +481,8 @@ function checkForUniqueName(elementObjects, name) {
 
 // Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
 function sortElementObjects(elementArray) {
-    var sortedarray = [];
-    var length = 0;
-    for (var i = 0; i < elementsToBeParsedCheckboxes.length; i++) {
-        var word = String(elementsToBeParsedCheckboxes[i]);
-        for (var j = 0; j < elementArray.length; j++) {
-            var type = String(elementArray[j].elemEnumType);
-            type = type.toLowerCase();
-            if (type == word) {
-                sortedarray[length] = elementArray[j];
-                length += 1;
-            }
-        }
-    }
-    return sortedarray;
+    elementArray.sort((a, b) => a.elemEnumType.localeCompare(b.elemEnumType)); //just compare the elemEnumType by alphabetical order
+    return elementArray;
 }
 
 
@@ -515,20 +496,20 @@ function getElementXPath(element) {
         return '//*[@id="' + element.id + '"]';
     else
         return getElementTreeXPath(element);
-};
+}
 
 function getElementTreeXPath(element) {
-    var paths = [];
+    let paths = [];
 
     for (; element && element.nodeType == 1; element = element.parentNode) {
-        var index = 0;
+        let index = 0;
 
         if (element && element.id) {
             paths.splice(0, 0, '/*[@id="' + element.id + '"]');
             break;
         }
 
-        for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
+        for (let sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
             // Ignore document type declaration.
             if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
                 continue;
@@ -537,8 +518,8 @@ function getElementTreeXPath(element) {
                 ++index;
         }
 
-        var tagName = element.nodeName.toLowerCase();
-        var pathIndex = (index ? "[" + (index + 1) + "]" : "");
+        let tagName = element.nodeName.toLowerCase();
+        let pathIndex = (index ? "[" + (index + 1) + "]" : "");
         paths.splice(0, 0, tagName + pathIndex);
     }
 

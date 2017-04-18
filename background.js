@@ -27,16 +27,16 @@ chrome.runtime.onMessage.addListener(function(
         switch (outputFileCheckboxes[i]) {
 
             case 'fileoutput_text': //Text file
-                download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createTextFile(outputFileHeader, elementObjects), generateFileNameDefault()+".txt");
                 break;
             case 'fileoutput_xml': //XML file
-                download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createXMLFile(outputFileHeader, elementObjects), generateFileNameDefault()+".xml");
                 break;
             case 'fileoutput_selenium': //Selenium (Java) file
-                download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createSeleniumFile(outputFileHeader, elementObjects), generateFileNameDefault()+".java");
                 break;
             case 'fileoutput_jasmine': //Jasmine (JS) file
-                download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault());
+                download(createJSObject(outputFileHeader, elementObjects), generateFileNameDefault()+".js");
                 break;
 
             default:
@@ -152,50 +152,53 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		if (elementObject.type == 'Button'){
 			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '      webElement.click();\n' ;
+			fileString += '      JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
+			fileString += '      js.executeScript("arguments[0].click();", webElement);\n' ;
+
 		}
 		else if(elementObject.type == 'Link'){
 			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '      webElement.click();\n' ;
+			fileString += '      webElement.click();\n' ;
+
 		}
 		else if(elementObject.type == 'Input'){
-			fileString += '   public void get'+elementObject.descriptiveName + '(){\n' ;		
+			fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;		
 			if (elementObject.name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("'+ elementObject.name  + '");\n';
-				fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				//fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
 			}
 			else if(elementObject.id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObject.id  + '");\n';
-				fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				//fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObject.xpath  + '");\n';
-				fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				//fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
 			}
-			//fileString += '       webElement.getAttribute("value")';
+			fileString += '       return webElement.getAttribute("value");';
 		}
 		else {
 			return fileString;
@@ -207,11 +210,13 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
 	fileString += 'public class SampleTestClass { \n\n';
-	fileString += '   public PageDriver page;\n\n';
-	fileString += '   public SampleTestClass(PageDriver page) {\n';
-	fileString += '			this.page = page;\n';
-	fileString += '	  }\n';
-	//fileString += '   private WebDriver driver;';
+	
+	//fileString += '   public PageDriver page;\n\n';
+	//fileString += '   public SampleTestClass(PageDriver page) {\n';
+	//fileString += '			this.page = page;\n';
+	//fileString += '	  }\n';
+	fileString += '   private WebDriver driver = new ChromeDriver();';
+	
     for (let i = 0; i < elementObjects.length; i++){
 		if (elementObjects[i].hasDescriptiveName == true){
 			fileString += '/*\n' +elementObjects[i].descriptiveName + '\n*/\n';
@@ -225,30 +230,24 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		if (elementObjects[i].type == 'Input'){
 			fileString += '   public void set'+elementObjects[i].descriptiveName + '(String value){\n' ;
 			if (elementObjects[i].name != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.name("' + elementObjects[i].name  + '");\n';
-				fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.name("' + elementObjects[i].name  + '"));\n';
+				//fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
 			}
 			else if(elementObjects[i].id != null){
-				//fileString += '      WebElement webElement = webDriver.findElement(By.id("' + elementObjects[i].id  + '");\n';
-				fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObjects[i].id  + '"));\n';
+				//fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
 			}
 			else {
-				//fileString += '      WebElement webElement = webDriver.findElement(By.xpath("' + elementObjects[i].xpath  + '");\n';
-				fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
+				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObjects[i].xpath  + '"));\n';
+				//fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
 			}
-			//fileString += '      webElement.sendKeys(value);\n' ;
+			fileString += '      webElement.clear();\n' ;
+			fileString += '      webElement.sendKeys(value);\n' ;
 			fileString += '   }';
 			fileString += '\n\n';
 		}
     }
-	/*fileString += '    public void fill() {\n'
-	for (var i = 0; i < elementObjects.length; i++){	
-		if (elementObjects[i].type == 'Input'){
-			fileString += '      set'+elementObjects[i].descriptiveName + '(String value){\n' ;
-		}		
-	}
-	fileString += '   }\n';
-	*/
+
 ///////// End of commented out code 
 	fileString += '}';
 
@@ -263,16 +262,128 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 
 //=================================================== Jasmine (JavaScript Object) File ===========================================================
 
-//TODO: Function to take sorted element object array, parse through, and create a Jasmine and/or Protractor compatable .js file and download it.
-function createJSObject(outputFileHeader, elementObjects) {
-    let fileString = '';
-    fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
+//======= JS Helper Functions ==========
+
+// Useful variables
+const INDENT = "    "; //4 spaces
+const DOUBLE_INDENT = INDENT+INDENT;
+const CLASS_NAME = "ParsedDOMElement"; //Name of the class in the file
+let CLASS_PARAMS = []; //The parameters used in this class
+
+// Create the JavaScript class to hold the parsed DOM elements
+function createClass(elementObjects) {
+
+    // String to hold class data
+    let fileString = "\n\n";
+
+    // Use class keyword to create it
+    fileString += "class "+CLASS_NAME+" { \n";
+
+    // Arrow operator for simple anonymous function to add keys of JSON object to array
+    let classParamSetup = x => { for (let prop in elementObjects[0]) { x.push(prop); } }; //<- Key, Value is elementObject[prop]
+    classParamSetup(CLASS_PARAMS);
+
+    // ======== Constructor ========
+    fileString += "\n"+INDENT+"constructor(";
+
+    // Fill out params
+    for (let i = 0; i < CLASS_PARAMS.length; i++) {
+        if (i == CLASS_PARAMS.length - 1) { //Last item
+            fileString += CLASS_PARAMS[i]+ ") {\n"; //Finish constructor
+        } else {
+            fileString += CLASS_PARAMS[i]+", "; //Trailing comma
+        }
+    }
+
+    // Assign values
+    for (let i = 0; i < CLASS_PARAMS.length; i++) {
+        if (i == CLASS_PARAMS.length - 1) { //Last item
+            fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";"; //No new line
+        } else {
+            fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";\n";//New line
+        }
+    }
+
+    // Finish constructor
+    fileString += "\n"+INDENT+"}\n"; //End constructor
+
+    // Finish class
+    fileString += "\n}\n\n"; //End class
+
+    // Return string
+    return fileString;
+}
+
+// Instantiate the objects using the class made above, plus the data from each element of course
+function instantiateObjects(elementObjects) {
+
+    // String to hold object instantiation data
+    let fileString = "";
+
+    // Loop through all parsed elements
+    for (let i = 0; i < elementObjects.length; i++) {
+
+        // The name to use when instantiating the object
+        let varName = "";
+        if (elementObjects[i].hasDescriptiveName) {
+            varName = elementObjects[i].descriptiveName; //If has a unique name use it
+        } else {
+            varName = "NoUniqueName"; //Otherwise create a unique name //ToDo: Peter, is this ever the case?
+        }
+
+        // Start instantiation
+        fileString += varName+" = new "+CLASS_NAME+"(";
+
+        // Fill out constructor with relevant info
+        // Logic: value = elementObject[key] == elementObjects[i][key] == elementsObjects[i][CLASS_PARAM[j]]
+        let value = "";
+        for (let j = 0; j < CLASS_PARAMS.length; j++) {
+
+            //ToDo: All in quotes? What kind of typing to do...
+            if (CLASS_PARAMS[j].toString().toLowerCase() == "xpath") {
+                value = "\'"+elementObjects[i][CLASS_PARAMS[j]]+"\'"; //encapsulate xPath in quotes (has to be single because xpath uses double internally)
+            } else {
+                value = elementObjects[i][CLASS_PARAMS[j]];
+            }
+
+            if (j == CLASS_PARAMS.length - 1) { //Last item
+                fileString += value + ");\n\n"; //Finish instantiation
+            } else {
+                fileString += value + ", "; //Trailing comma
+            }
+
+        }
+
+    }
+
+    //Return string
+    return fileString;
+}
+
+
+//======= Main JS Function =============
+
+function createJSObject(outputFileHeader, elementObjects) {
+
+    // Create a string to hold the data in the file
+    let fileString = '';
+
+    // Header info
+    fileString += '// Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.';
+    fileString += '// Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.';
+
+    // Page data
+    fileString += createClass(elementObjects);
+    //ToDo: Include Enum?
+    fileString += instantiateObjects(elementObjects);
+
+    // Create a blob object to store the new file
     const blob = new Blob([fileString], {
         type: 'text/plain'
     });
-    //console.log("Created Blob object.");
 
+    // Return the URL of the blob so that it can be downloaded
     return URL.createObjectURL(blob);
 }
 
