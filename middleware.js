@@ -298,12 +298,12 @@ function filterElements(elementObjects, filters, initial) {
             //Run through elements and do not print any HTML that is too long.
             elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
             returnElements.push(elementObjects[i]);
-        // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
+            // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
         } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //For angular and js elements
-          //Run through elements and do not print any HTML that is too long.
-          elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
-          returnElements.push(elementObjects[i]);
-        // Otherwise, if initial runthrough, add *all* elements regardless of parsing
+            //Run through elements and do not print any HTML that is too long.
+            elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
+            returnElements.push(elementObjects[i]);
+            // Otherwise, if initial runthrough, add *all* elements regardless of parsing
         } else if (initial) {
             returnElements.push(elementObjects[i])
         }
@@ -343,7 +343,7 @@ function isInSelection(element, filters) {
                     enumType = ElementTypeEnum.INPUT;
                     break;
                 default: //Error if not one of the elements desired (should theoretically be unreachable due to above equality check for UI currFilter)
-                    throw "Invalid element tag: "+element.doc_element.tagName+" is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
+                    throw "Invalid element tag: " + element.doc_element.tagName + " is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
             }
 
             // Assign it if it exists
@@ -434,8 +434,11 @@ function getElemTypeAsDescriptiveName(element) {
 function sanitizeDescriptiveName(name) {
     let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
+    if (sanitizedName.length > 60) {
+        sanitizedName = trimDescriptiveName(sanitizedName.trim(), 60);
+    }
 
-    return trimDescriptiveName(sanitizedName.trim(), 60);
+    return sanitizedName;
 }
 
 /**
@@ -495,10 +498,10 @@ function checkForUniqueName(elementObjects, name) {
             frequencyArray.push(elementObjects[i].doc_element.descriptiveName);
         }
     }
-    if (frequencyArray.length == 0){
-      return name;
+    if (frequencyArray.length == 0) {
+        return name;
     } else {
-      return name + frequencyArray.length;
+        return name + frequencyArray.length;
     }
 }
 
