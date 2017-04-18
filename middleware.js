@@ -48,7 +48,7 @@ class Element {
         return {
             'hasDescriptiveName': this.hasDescriptiveName,
             'descriptiveName': this.descriptiveName,
-            // 'fullHTML': this.fullhtml,
+            'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
             'clazz': this.clazz,
             // 'Tag': this.tag,
@@ -290,10 +290,14 @@ function filterElements(elementObjects, filters) {
         // If it is not parsed, check if it is a valid element, determined by the UI selection (which assigns data to it if so)
         if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) { //For basic elements
             elementObjects[i].setParsed();
+            //Run through elements and do not print any HTML that is too long.
+            elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
             returnElements.push(elementObjects[i]);
         // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
         } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //For angular and js elements
-            returnElements.push(elementObjects[i]);
+          //Run through elements and do not print any HTML that is too long.
+          elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
+          returnElements.push(elementObjects[i]);
         }
     }
 
@@ -422,7 +426,22 @@ function getElemTypeAsDescriptiveName(element) {
 function sanitizeDescriptiveName(name) {
     let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
-    return sanitizedName.trim();
+
+    return trimDescriptiveName(sanitizedName.trim(), 60);
+}
+
+/**
+ * Function to shorten a descriptive name string to a set length.
+ * It will attempt to cut the word on a space delimiter.
+ */
+function trimDescriptiveName(name, maxLength) {
+    //trim the string to the maximum length
+    var trimmedString = name.substr(0, maxLength);
+
+    //re-trim if we are in the middle of a word
+    trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
+
+    return trimmedString;
 }
 
 /**
@@ -525,3 +544,19 @@ function getElementTreeXPath(element) {
 
     return paths.length ? "/" + paths.join("/") : null;
 };
+
+/**
+ * Function check and remove abnormally long full HTML from the output.
+ * (Long full html can render massive preformace losses in output files)
+ *
+ * @param html - HTML to be checked
+ * @returns {string} - Either html or filler string.
+ */
+function checkHTMLLength(element) {
+    if (element.fullhtml.length > 2000) {
+        return "Full HTML of element is too long to display.";
+    } else {
+        return element.fullhtml;
+    }
+
+}
