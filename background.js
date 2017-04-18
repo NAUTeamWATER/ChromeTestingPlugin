@@ -277,14 +277,17 @@ function createClass(elementObjects) {
     // String to hold class data
     let fileString = "\n\n";
 
+    // Use class keyword to create it
     fileString += "class "+CLASS_NAME+" { \n";
 
     // Arrow operator for simple anonymous function to add keys of JSON object to array
     let classParamSetup = x => { for (let prop in elementObjects[0]) { x.push(prop); } }; //<- Key, Value is elementObject[prop]
     classParamSetup(CLASS_PARAMS);
 
-    // Create the constructor
+    // ======== Constructor ========
     fileString += "\n"+INDENT+"constructor(";
+
+    // Fill out params
     for (let i = 0; i < CLASS_PARAMS.length; i++) {
         if (i == CLASS_PARAMS.length - 1) { //Last item
             fileString += CLASS_PARAMS[i]+ ") {\n"; //Finish constructor
@@ -293,19 +296,69 @@ function createClass(elementObjects) {
         }
     }
 
-    fileString += "\n"+INDENT+"} //End constructor\n";
+    // Assign values
+    for (let i = 0; i < CLASS_PARAMS.length; i++) {
+        if (i == CLASS_PARAMS.length - 1) { //Last item
+            fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";"; //No new line
+        } else {
+            fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";\n";//New line
+        }
+    }
 
-    fileString += "\n} //End class";
+    // Finish constructor
+    fileString += "\n"+INDENT+"}\n"; //End constructor
 
+    // Finish class
+    fileString += "\n}\n\n"; //End class
+
+    // Return string
     return fileString;
 }
 
+// Instantiate the objects using the class made above, plus the data from each element of course
 function instantiateObjects(elementObjects) {
+
     // String to hold object instantiation data
     let fileString = "";
 
-    return fileString;
+    // Loop through all parsed elements
+    for (let i = 0; i < elementObjects.length; i++) {
 
+        // The name to use when instantiating the object
+        let varName = "";
+        if (elementObjects[i].hasDescriptiveName) {
+            varName = elementObjects[i].descriptiveName; //If has a unique name use it
+        } else {
+            varName = "NoUniqueName"; //Otherwise create a unique name //ToDo: Peter, is this ever the case?
+        }
+
+        // Start instantiation
+        fileString += varName+" = new "+CLASS_NAME+"(";
+
+        // Fill out constructor with relevant info
+        // Logic: value = elementObject[key] == elementObjects[i][key] == elementsObjects[i][CLASS_PARAM[j]]
+        let value = "";
+        for (let j = 0; j < CLASS_PARAMS.length; j++) {
+
+            //ToDo: All in quotes? What kind of typing to do...
+            if (CLASS_PARAMS[j].toString().toLowerCase() == "xpath") {
+                value = "\'"+elementObjects[i][CLASS_PARAMS[j]]+"\'"; //encapsulate xPath in quotes (has to be single because xpath uses double internally)
+            } else {
+                value = elementObjects[i][CLASS_PARAMS[j]];
+            }
+
+            if (j == CLASS_PARAMS.length - 1) { //Last item
+                fileString += value + ");\n\n"; //Finish instantiation
+            } else {
+                fileString += value + ", "; //Trailing comma
+            }
+
+        }
+
+    }
+
+    //Return string
+    return fileString;
 }
 
 
@@ -322,6 +375,7 @@ function createJSObject(outputFileHeader, elementObjects) {
 
     // Page data
     fileString += createClass(elementObjects);
+    //ToDo: Include Enum?
     fileString += instantiateObjects(elementObjects);
 
     // Create a blob object to store the new file
