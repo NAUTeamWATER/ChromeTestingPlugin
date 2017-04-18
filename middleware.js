@@ -50,7 +50,7 @@ class Element {
             'descriptiveName': this.descriptiveName,
             // 'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
-            'class': this.clazz,
+            'clazz': this.clazz,
             // 'Tag': this.tag,
             'id': this.id,
             'name': this.name,
