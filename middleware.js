@@ -211,7 +211,7 @@ function getBasicElements(elementArray) {
     elementArray.forEach(function(element) {
         element.setData(element.doc_element.outerHTML,
             element.doc_element.getAttribute("class"),
-            element.doc_element.tagName == "" ? null : element.doc_element.tagName,
+            element.doc_element.tagName === "" ? null : element.doc_element.tagName,
             element.doc_element.getAttribute("name"),
             element.doc_element.getAttribute("id"),
             getElementXPath(element.doc_element));
@@ -235,8 +235,8 @@ function addJSElements(elementObjects, UIselection) {
 
     // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("onclick") > -1)) { //If on-click selected in UI and element isn't parsed already
-            if (elementObjects[i].fullhtml.indexOf("on-click") != -1) { //If element has on-click ToDo: refine?
+        if (!elementObjects[i].isParsedAlready() && UIselection.prototype.contains("onclick")) { //If on-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.prototype.contains("on-click")) { //If element has on-click ToDo: refine?
                 elementObjects[i].setParsed(); //Set parsed
                 elementObjects[i].elemEnumType = ElementTypeEnum.ONCLICK; //Set elemEnumType
             }
@@ -264,8 +264,8 @@ function getAngularElements(elementObjects, UIselection) {
 
     // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && (UIselection.indexOf("ngclick") > -1)) { //If ng-click selected in UI and element isn't parsed already
-            if (elementObjects[i].fullhtml.indexOf("ng-click") != -1) { //If element has ng-click ToDo: refine?
+        if (!elementObjects[i].isParsedAlready() && UIselection.prototype.includes("ngclick")) { //If ng-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.prototype.includes("ng-click")) { //If element has ng-click ToDo: refine?
                 elementObjects[i].setParsed(); //Set parsed
                 elementObjects[i].elemEnumType = ElementTypeEnum.NGCLICK; //Set elemEnumType
             }
@@ -299,7 +299,7 @@ function filterElements(elementObjects, filters, initial) {
             elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
             returnElements.push(elementObjects[i]);
         // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
-        } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //For angular and js elements
+        } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType !== null) { //For angular and js elements
           //Run through elements and do not print any HTML that is too long.
           elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
           returnElements.push(elementObjects[i]);
@@ -330,7 +330,7 @@ function isInSelection(element, filters) {
         let currFilter = filters[i];
 
         // Simple case, check the tagName (e.g. <button ...></button> against the UI one selected
-        if (element.doc_element.tagName == currFilter.toUpperCase()) {
+        if (element.doc_element.tagName === currFilter.toUpperCase()) {
             let enumType;
             switch (element.doc_element.tagName) {
                 case "BUTTON":
