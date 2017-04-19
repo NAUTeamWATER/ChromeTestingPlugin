@@ -145,12 +145,21 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
     let fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
+	
+	function Xpathcleanup(elementObject,string){
+		string += elementObject.xpath;
+		string = string.replace('"', "'");
+		string = string.replace('"', "'");
+		return string;
+	}
 /*Currently commented out code is for Users that aren't Choice Hotel employees 
   For choice version, make sure anything involving webElement, driver,WebDriver is  commented out.
   For consumer version make sure anything involving pagedriver,or page is commented out.
 */	
 	//adds testing functionality to webElement; 
 	function SetupFunctions(fileString, elementObject) {
+		var XpathString = '';
+		XpathString = Xpathcleanup(elementObject,XpathString);
 		if (elementObject.type == 'Button' || elementObject.type == 'JavaScript (on-click)' || elementObject.type == 'Angular (ng-click)'){	
 			if (elementObject.name != null){
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
@@ -174,7 +183,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 			}
 			else {
 			    fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;	
-				fileString += '        page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
 				/*
 				fileString += '        WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
 				fileString += '        JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
@@ -204,7 +213,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 			}
 			else {
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
-				fileString += '        page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
 				/*
 				fileString += '        WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
 				fileString += '        webElement.click();\n' ;
@@ -256,7 +265,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 			else {
 			// Getter function	
 				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;
-				fileString += '         page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '         page.getFieldValueByXpath("' + XpathString  + '");\n' ;
 				/*
 				fileString += '         WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
 				fileString += '         return webElement.getAttribute("value");\n';
@@ -265,7 +274,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				
 			// Setter function	
 				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
-				fileString += '         page.typeValueInFieldByXpath("' + elementObject.xpath  + '" , value);\n' ;
+				fileString += '         page.typeValueInFieldByXpath("' + XpathString  + '" , value);\n' ;
 				/*
 				fileString += '         WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
 				fileString += '         webElement.clear();\n' ;

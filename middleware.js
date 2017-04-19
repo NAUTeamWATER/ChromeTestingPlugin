@@ -235,8 +235,8 @@ function addJSElements(elementObjects, UIselection) {
 
     // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && UIselection.prototype.contains("onclick")) { //If on-click selected in UI and element isn't parsed already
-            if (elementObjects[i].fullhtml.prototype.contains("on-click")) { //If element has on-click ToDo: refine?
+        if (!elementObjects[i].isParsedAlready() && UIselection.includes("onclick")) { //If on-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.includes("on-click")) { //If element has on-click ToDo: refine?
                 elementObjects[i].setParsed(); //Set parsed
                 elementObjects[i].elemEnumType = ElementTypeEnum.ONCLICK; //Set elemEnumType
             }
@@ -264,8 +264,8 @@ function getAngularElements(elementObjects, UIselection) {
 
     // Loop through each element
     for (let i = 0; i < elementObjects.length; i++) {
-        if (!elementObjects[i].isParsedAlready() && UIselection.prototype.includes("ngclick")) { //If ng-click selected in UI and element isn't parsed already
-            if (elementObjects[i].fullhtml.prototype.includes("ng-click")) { //If element has ng-click ToDo: refine?
+        if (!elementObjects[i].isParsedAlready() && UIselection.includes("ngclick")) { //If ng-click selected in UI and element isn't parsed already
+            if (elementObjects[i].fullhtml.includes("ng-click")) { //If element has ng-click ToDo: refine?
                 elementObjects[i].setParsed(); //Set parsed
                 elementObjects[i].elemEnumType = ElementTypeEnum.NGCLICK; //Set elemEnumType
             }
@@ -343,7 +343,7 @@ function isInSelection(element, filters) {
                     enumType = ElementTypeEnum.INPUT;
                     break;
                 default: //Error if not one of the elements desired (should theoretically be unreachable due to above equality check for UI currFilter)
-                    throw "Invalid element tag: "+element.doc_element.tagName+" is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
+                    throw "Invalid element tag: " + element.doc_element.tagName + " is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
             }
 
             // Assign it if it exists
@@ -389,18 +389,18 @@ function generateAndSetDescriptiveName(elementObjects) {
  * @returns {*} - the string representing the name to display
  */
 function generateDescriptiveName(element) {
-    if (element.name != null) {
+    if (element.name !== null) {
         element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.name) + ' ' + element.doc_element.tagName.toLowerCase())); //Name + Type
 
-    } else if (element.id != null) {
+    } else if (element.id !== null) {
         element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.id) + ' ' + element.doc_element.tagName.toLowerCase())); //ID + Type
 
     } else {
-        if (element.doc_element.textContent != '') {
+        if (element.doc_element.textContent !== '') {
             let sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
-            if (sanitizedName.trim() == '') {
+            if (sanitizedName.trim() === '') {
                 //Make sure the sanitized name is not an empty string
                 return capitalizeFirstLetter(getElemTypeAsDescriptiveName(element));
             }
@@ -434,8 +434,11 @@ function getElemTypeAsDescriptiveName(element) {
 function sanitizeDescriptiveName(name) {
     let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
+    if (sanitizedName.length > 60) {
+        sanitizedName = trimDescriptiveName(sanitizedName.trim(), 60);
+    }
 
-    return trimDescriptiveName(sanitizedName.trim(), 60);
+    return sanitizedName;
 }
 
 /**
@@ -444,7 +447,7 @@ function sanitizeDescriptiveName(name) {
  */
 function trimDescriptiveName(name, maxLength) {
     //trim the string to the maximum length
-    var trimmedString = name.substr(0, maxLength);
+    let trimmedString = name.substr(0, maxLength);
 
     //re-trim if we are in the middle of a word
     trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
@@ -475,7 +478,7 @@ function capitalizeFirstLetter(name) {
 function camelize(name) {
     return name.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
         if (+match === 0) return "";
-        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+        return index === 0 ? match.toLowerCase() : match.toUpperCase();
     });
 }
 
@@ -491,14 +494,14 @@ function checkForUniqueName(elementObjects, name) {
     let frequencyArray = [];
     for (let i = 0; i < elementObjects.length; i++) {
         //console.log(elementObjects[i].descriptiveName);
-        if (elementObjects[i].descriptiveName != null && elementObjects[i].descriptiveName.startsWith(name)) {
+        if (elementObjects[i].descriptiveName !== null && elementObjects[i].descriptiveName.startsWith(name)) {
             frequencyArray.push(elementObjects[i].doc_element.descriptiveName);
         }
     }
-    if (frequencyArray.length == 0){
-      return name;
+    if (frequencyArray.length === 0) {
+        return name;
     } else {
-      return name + frequencyArray.length;
+        return name + frequencyArray.length;
     }
 }
 
@@ -528,7 +531,7 @@ function getElementXPath(element) {
 function getElementTreeXPath(element) {
     let paths = [];
 
-    for (; element && element.nodeType == 1; element = element.parentNode) {
+    for (; element && element.nodeType === 1; element = element.parentNode) {
         let index = 0;
 
         if (element && element.id) {
@@ -538,10 +541,10 @@ function getElementTreeXPath(element) {
 
         for (let sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
             // Ignore document type declaration.
-            if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
+            if (sibling.nodeType === Node.DOCUMENT_TYPE_NODE)
                 continue;
 
-            if (sibling.nodeName == element.nodeName)
+            if (sibling.nodeName === element.nodeName)
                 ++index;
         }
 
@@ -551,13 +554,13 @@ function getElementTreeXPath(element) {
     }
 
     return paths.length ? "/" + paths.join("/") : null;
-};
+}
 
 /**
  * Function check and remove abnormally long full HTML from the output.
  * (Long full html can render massive preformace losses in output files)
  *
- * @param html - HTML to be checked
+ * @param element - the element to check
  * @returns {string} - Either html or filler string.
  */
 function checkHTMLLength(element) {
