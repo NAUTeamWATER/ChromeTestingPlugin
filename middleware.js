@@ -48,7 +48,7 @@ class Element {
         return {
             'hasDescriptiveName': this.hasDescriptiveName,
             'descriptiveName': this.descriptiveName,
-            // 'fullHTML': this.fullhtml,
+            'fullHTML': this.fullhtml,
             'type': this.elemEnumType,
             'clazz': this.clazz,
             // 'Tag': this.tag,
@@ -186,10 +186,14 @@ function retrieveElements() {
 function parseElements(elementArray, UIselection) {
 
     let basicElementArray = getBasicElements(elementArray); //button, links, input, xpath, etc; intuitive UI things that will ALWAYS be used
+    basicElementArray = filterElements(basicElementArray, UIselection, true); //Filter initially, assigning isParsed where relevant, so advanced ones don't override their type (e.g. buttons are higher priority than ng-click)
+
     let basicAndJSElements = addJSElements(basicElementArray, UIselection); //add JS element data, e.g. on-click
     let basicJSAndAngularElements = getAngularElements(basicAndJSElements, UIselection); //add the angular element data, e.g. ng-click
+
     // Here is where you could add things such as jQuery() or other future expansion categorical data
-    return filterElements(basicJSAndAngularElements, UIselection); //return the filtered list (culls out elements not included in the UI)
+
+    return filterElements(basicJSAndAngularElements, UIselection, false); //return the filtered list (culls out elements not included in the UI)
 }
 
 
@@ -278,9 +282,10 @@ function getAngularElements(elementObjects, UIselection) {
  *
  * @param elementObjects - all HTML elements on the page, already wrapped in the Element class
  * @param filters - the checkboxes, specifically the ids of them
+ * @param initial - for the initial parsing of elements; returns all elements (but still assigns isParsed() where needed)
  * @returns {Array} - Element objects, with .parsed=True and .enumType={some ElementTypeEnum} assigned
  */
-function filterElements(elementObjects, filters) {
+function filterElements(elementObjects, filters, initial) {
 
     // Return array to hold filtered elements
     let returnElements = [];
@@ -290,10 +295,17 @@ function filterElements(elementObjects, filters) {
         // If it is not parsed, check if it is a valid element, determined by the UI selection (which assigns data to it if so)
         if (!elementObjects[i].isParsedAlready() && isInSelection(elementObjects[i], filters)) { //For basic elements
             elementObjects[i].setParsed();
+            //Run through elements and do not print any HTML that is too long.
+            elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
             returnElements.push(elementObjects[i]);
-        // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
+            // Otherwise, if it is parsed and has an elemEnumType assigned, simply add it to the return array
         } else if (elementObjects[i].isParsedAlready() && elementObjects[i].elemEnumType != null) { //For angular and js elements
+            //Run through elements and do not print any HTML that is too long.
+            elementObjects[i].fullhtml = checkHTMLLength(elementObjects[i]);
             returnElements.push(elementObjects[i]);
+            // Otherwise, if initial runthrough, add *all* elements regardless of parsing
+        } else if (initial) {
+            returnElements.push(elementObjects[i])
         }
     }
 
@@ -331,7 +343,7 @@ function isInSelection(element, filters) {
                     enumType = ElementTypeEnum.INPUT;
                     break;
                 default: //Error if not one of the elements desired (should theoretically be unreachable due to above equality check for UI currFilter)
-                    throw "Invalid element tag: "+element.doc_element.tagName+" is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
+                    throw "Invalid element tag: " + element.doc_element.tagName + " is not a BUTTON, LINK, or INPUT and yet is checked in the UI. Needs to be added programmatically here."
             }
 
             // Assign it if it exists
@@ -422,7 +434,25 @@ function getElemTypeAsDescriptiveName(element) {
 function sanitizeDescriptiveName(name) {
     let sanitizedName = name.replace(/[^a-z\d\s]+/gi, "");
     sanitizedName = sanitizedName.replace(/\s\s+/g, ' ');
-    return sanitizedName.trim();
+    if (sanitizedName.length > 60) {
+        sanitizedName = trimDescriptiveName(sanitizedName.trim(), 60);
+    }
+
+    return sanitizedName;
+}
+
+/**
+ * Function to shorten a descriptive name string to a set length.
+ * It will attempt to cut the word on a space delimiter.
+ */
+function trimDescriptiveName(name, maxLength) {
+    //trim the string to the maximum length
+    var trimmedString = name.substr(0, maxLength);
+
+    //re-trim if we are in the middle of a word
+    trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
+
+    return trimmedString;
 }
 
 /**
@@ -468,10 +498,10 @@ function checkForUniqueName(elementObjects, name) {
             frequencyArray.push(elementObjects[i].doc_element.descriptiveName);
         }
     }
-    if (frequencyArray.length == 0){
-      return name;
+    if (frequencyArray.length == 0) {
+        return name;
     } else {
-      return name + frequencyArray.length;
+        return name + frequencyArray.length;
     }
 }
 
@@ -525,3 +555,19 @@ function getElementTreeXPath(element) {
 
     return paths.length ? "/" + paths.join("/") : null;
 };
+
+/**
+ * Function check and remove abnormally long full HTML from the output.
+ * (Long full html can render massive preformace losses in output files)
+ *
+ * @param html - HTML to be checked
+ * @returns {string} - Either html or filler string.
+ */
+function checkHTMLLength(element) {
+    if (element.fullhtml.length > 2000) {
+        return "Full HTML of element is too long to display.";
+    } else {
+        return element.fullhtml;
+    }
+
+}
