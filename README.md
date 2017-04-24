@@ -1,4 +1,4 @@
-# Chrome Testing Plugin</b> ![](https://img.shields.io/badge/Chrome_Store-Coming_Soon!-yellow.svg "Link coming soon too!")
+# Chrome Testing Plugin</b> [![](https://img.shields.io/badge/Chrome_Store-Download_here-green.svg "Free!")](https://chrome.google.com/webstore/detail/capstone-team-water-exten/jajjkhengkceflfndohpbomnkdknnidc)
 
 Extension which scrapes dynamic HTML to generate files for use in automated testing suites.
 

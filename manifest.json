@@ -3,7 +3,7 @@
 
   "name": "Capstone Team W.A.T.E.R Extension",
   "description": "Page Object Builder for Automated Testing.",
-  "version": "1.0",
+  "version": "1.0.0",
 
   "icons": {
   "48": "water-icon48.png"
