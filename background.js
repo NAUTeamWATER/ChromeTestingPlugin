@@ -145,77 +145,160 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
     let fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
-////// commented out code is for Users that aren't Choice Hotel employees 
 	
-	//adds testing functionality to webElement; Need to see if actually works with Selenium
-	function SetupTesting(fileString, elementObject) {
-		if (elementObject.type == 'Button'){
-			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
+	function Xpathcleanup(elementObject,string){
+		string += elementObject.xpath;
+		string = string.replace('"', "'");
+		string = string.replace('"', "'");
+		return string;
+	}
+/*Currently commented out code is for Users that aren't Choice Hotel employees 
+  For choice version, make sure anything involving webElement, driver,WebDriver is  commented out.
+  For consumer version make sure anything involving pagedriver,or page is commented out.
+*/	
+	//adds testing functionality to webElement; 
+	function SetupFunctions(fileString, elementObject) {
+		var XpathString = '';
+		XpathString = Xpathcleanup(elementObject,XpathString);
+		if (elementObject.type == 'Button' || elementObject.type == 'JavaScript (on-click)' || elementObject.type == 'Angular (ng-click)'){	
 			if (elementObject.name != null){
-				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
-				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
+				fileString += '        page.clickElementByName("' + elementObject.name  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				fileString += '        JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
+				fileString += '        js.executeScript("arguments[0].click();", webElement);\n' ;
+				*/
+				fileString += '   }\n';
 			}
 			else if(elementObject.id != null){
-				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
-				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;	
+				fileString += '        page.clickElementById("' + elementObject.id  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				fileString += '        JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
+				fileString += '        js.executeScript("arguments[0].click();", webElement);\n' ;
+				*/
+				fileString += '   }\n';
 			}
 			else {
-				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
-				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+			    fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;	
+				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				fileString += '        JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
+				fileString += '        js.executeScript("arguments[0].click();", webElement);\n' ;
+				*/
+				fileString += '   }\n';
 			}
-			fileString += '      JavascriptExecutor js = (JavascriptExecutor)driver;\n' ;
-			fileString += '      js.executeScript("arguments[0].click();", webElement);\n' ;
-
 		}
-		else if(elementObject.type == 'Link'){
-			fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;		
+		else if(elementObject.type == 'Link'){				
 			if (elementObject.name != null){
-				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
-				//fileString += '      page.clickElementByName("' + elementObject.name  + '");\n' ;
+				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
+				fileString += '        page.clickElementByName("' + elementObject.name  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				fileString += '        webElement.click();\n' ;
+				*/
+			    fileString += '   }\n';
 			}
 			else if(elementObject.id != null){
-				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
-				//fileString += '      page.clickElementById("' + elementObject.id  + '");\n' ;
+				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
+				fileString += '        page.clickElementById("' + elementObject.id  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				fileString += '        webElement.click();\n' ;
+				*/
+			    fileString += '   }\n';
 			}
 			else {
-				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
-				//fileString += '      page.clickElementByXpath("' + elementObject.xpath  + '");\n' ;
+				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
+				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
+				/*
+				fileString += '        WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				fileString += '        webElement.click();\n' ;
+			    */
+				fileString += '   }\n';
 			}
-			fileString += '      webElement.click();\n' ;
-
 		}
-		else if(elementObject.type == 'Input'){
-			fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;		
+		else if(elementObject.type == 'Input'){	
 			if (elementObject.name != null){
-				fileString += '      WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
-				//fileString += '      page.getFieldValueByName("' + elementObject.name  + '");\n' ;
+			// Getter function
+				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;	
+				fileString += '         page.getFieldValueByName("' + elementObject.name  + '");\n' ;
+				/*
+				fileString += '			WebElement webElement = driver.findElement(By.name("'+ elementObject.name  + '"));\n';
+				fileString += '         return webElement.getAttribute("value");\n';
+				*/
+				fileString += '   }\n';
+				
+			// Setter function	
+				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
+				fileString += '         page.typeValueInFieldByName("' + elementObject.name  + '" , value);\n' ;
+				/*
+				fileString += '         WebElement webElement = driver.findElement(By.name("' + elementObject.name  + '"));\n';
+				fileString += '         webElement.clear();\n' ;
+				fileString += '         webElement.sendKeys(value);\n' ;
+				*/
+				fileString += '   }\n';
 			}
 			else if(elementObject.id != null){
-				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
-				//fileString += '      page.getFieldValueById("' + elementObject.id  + '");\n' ;
+			// Getter function
+				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;	
+				fileString += '         page.getFieldValueById("' + elementObject.id  + '");\n' ;
+				/*
+				fileString += '         WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				fileString += '         return webElement.getAttribute("value");\n';
+				*/
+				fileString += '   }\n';
+				
+			// Setter function
+				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
+				fileString += '         page.typeValueInFieldById("' + elementObject.id  + '" , value);\n' ;
+				/*
+				fileString += '         WebElement webElement = driver.findElement(By.id("' + elementObject.id  + '"));\n';
+				fileString += '         webElement.clear();\n' ;
+				fileString += '         webElement.sendKeys(value);\n' ;
+				*/
+				fileString += '   }\n';
 			}
 			else {
-				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
-				//fileString += '      page.getFieldValueByXpath("' + elementObject.xpath  + '");\n' ;
+			// Getter function	
+				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;
+				fileString += '         page.getFieldValueByXpath("' + XpathString  + '");\n' ;
+				/*
+				fileString += '         WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				fileString += '         return webElement.getAttribute("value");\n';
+				*/
+				fileString += '   }\n';
+				
+			// Setter function	
+				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
+				fileString += '         page.typeValueInFieldByXpath("' + XpathString  + '" , value);\n' ;
+				/*
+				fileString += '         WebElement webElement = driver.findElement(By.xpath("' + elementObject.xpath  + '"));\n';
+				fileString += '         webElement.clear();\n' ;
+				fileString += '         webElement.sendKeys(value);\n' ;
+				*/
+				fileString += '   }\n';
 			}
-			fileString += '       return webElement.getAttribute("value");';
 		}
 		else {
 			return fileString;
 		}
 		return fileString;
     }
-    //Loop through elements here...
+/// Start of the file Here!!!!
 	fileString += '\n';
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
 	fileString += 'public class SampleTestClass { \n\n';
 	
-	//fileString += '   public PageDriver page;\n\n';
-	//fileString += '   public SampleTestClass(PageDriver page) {\n';
-	//fileString += '			this.page = page;\n';
-	//fileString += '	  }\n';
-	fileString += '   private WebDriver driver = new ChromeDriver();';
+	fileString += '   public PageDriver page;\n\n';
+	fileString += '   public SampleTestClass(PageDriver page) {\n';
+	fileString += '			this.page = page;\n';
+	fileString += '	  }\n';
+	//fileString += '   private WebDriver driver = new ChromeDriver();';
 	
     for (let i = 0; i < elementObjects.length; i++){
 		if (elementObjects[i].hasDescriptiveName == true){
@@ -224,28 +307,8 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		else{
 			fileString += '/*\n' +elementObjects[i].fullHTML + '\n*/\n';
 		}
-		fileString = SetupTesting(fileString, elementObjects[i]);
-		fileString += '   }';
+		fileString = SetupFunctions(fileString, elementObjects[i]);
 		fileString += '\n\n';
-		if (elementObjects[i].type == 'Input'){
-			fileString += '   public void set'+elementObjects[i].descriptiveName + '(String value){\n' ;
-			if (elementObjects[i].name != null){
-				fileString += '      WebElement webElement = driver.findElement(By.name("' + elementObjects[i].name  + '"));\n';
-				//fileString += '      page.typeValueInFieldByName("' + elementObjects[i].name  + '" , value);\n' ;
-			}
-			else if(elementObjects[i].id != null){
-				fileString += '      WebElement webElement = driver.findElement(By.id("' + elementObjects[i].id  + '"));\n';
-				//fileString += '      page.typeValueInFieldById("' + elementObjects[i].id  + '" , value);\n' ;
-			}
-			else {
-				fileString += '      WebElement webElement = driver.findElement(By.xpath("' + elementObjects[i].xpath  + '"));\n';
-				//fileString += '      page.typeValueInFieldByXpath("' + elementObjects[i].xpath  + '" , value);\n' ;
-			}
-			fileString += '      webElement.clear();\n' ;
-			fileString += '      webElement.sendKeys(value);\n' ;
-			fileString += '   }';
-			fileString += '\n\n';
-		}
     }
 
 ///////// End of commented out code 
@@ -270,6 +333,7 @@ const INDENT = "    "; //4 spaces
 const DOUBLE_INDENT = INDENT+INDENT;
 const CLASS_NAME = "ParsedDOMElement"; //Name of the class in the file
 let CLASS_PARAMS = []; //The parameters used in this class
+const CLASS_PARAM_START_INDEX = 3; //The index of parameters passed to start. 3 => skips hasDescriptiveName, descriptiveName and fullHTML
 
 // Create the JavaScript class to hold the parsed DOM elements
 function createClass(elementObjects) {
@@ -278,18 +342,30 @@ function createClass(elementObjects) {
     let fileString = "\n\n";
 
     // Use class keyword to create it
-    fileString += "class "+CLASS_NAME+" { \n";
+    fileString += "// A class to hold the parsed UI elements. \n// See the constructor comments below for detailed information.\n";
+    fileString += "class "+CLASS_NAME+" { \n\n";
 
     // Arrow operator for simple anonymous function to add keys of JSON object to array
     let classParamSetup = x => { for (let prop in elementObjects[0]) { x.push(prop); } }; //<- Key, Value is elementObject[prop]
     classParamSetup(CLASS_PARAMS);
+    CLASS_PARAMS = CLASS_PARAMS.slice(CLASS_PARAM_START_INDEX); //remove unused elements
+
 
     // ======== Constructor ========
-    fileString += "\n"+INDENT+"constructor(";
+
+    // Add comments to the constructor describing them
+    fileString += INDENT+"//type = The type of the element. Can be  Angular (ng-click), Button, Javascript (on-click), Input, or Link.\n";
+    fileString += INDENT+"//clazz = The class of the HTML tag. E.g. <...class='col-md-3 col-xs-12 component-col'...>. It is assigned 'null' if it doesn't exist.\n";
+    fileString += INDENT+"//id = The ID of the HTML tag. E.g. <...id='x'...>. It is assigned 'null' if it doesn't exist.\n";
+    fileString += INDENT+"//name = The name of the HTML tag. E.g. <...name='x'...>. It is assigned 'null' if it doesn't exist.\n";
+    fileString += INDENT+"//xpath = The xPath of the element. A generated value.\n";
+
+    // Start the actual constructor
+    fileString += INDENT+"constructor(";
 
     // Fill out params
     for (let i = 0; i < CLASS_PARAMS.length; i++) {
-        if (i == CLASS_PARAMS.length - 1) { //Last item
+        if (i === CLASS_PARAMS.length - 1) { //Last item
             fileString += CLASS_PARAMS[i]+ ") {\n"; //Finish constructor
         } else {
             fileString += CLASS_PARAMS[i]+", "; //Trailing comma
@@ -298,7 +374,7 @@ function createClass(elementObjects) {
 
     // Assign values
     for (let i = 0; i < CLASS_PARAMS.length; i++) {
-        if (i == CLASS_PARAMS.length - 1) { //Last item
+        if (i === CLASS_PARAMS.length - 1) { //Last item
             fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";"; //No new line
         } else {
             fileString += DOUBLE_INDENT + "this." + CLASS_PARAMS[i] + " = " + CLASS_PARAMS[i] + ";\n";//New line
@@ -319,7 +395,7 @@ function createClass(elementObjects) {
 function instantiateObjects(elementObjects) {
 
     // String to hold object instantiation data
-    let fileString = "";
+    let fileString = "// All of the instantiated elements, with the parsed data from each, are below.\n";
 
     // Loop through all parsed elements
     for (let i = 0; i < elementObjects.length; i++) {
@@ -329,25 +405,25 @@ function instantiateObjects(elementObjects) {
         if (elementObjects[i].hasDescriptiveName) {
             varName = elementObjects[i].descriptiveName; //If has a unique name use it
         } else {
-            varName = "NoUniqueName"; //Otherwise create a unique name //ToDo: Peter, is this ever the case?
+            varName = "NoUniqueName"; //Otherwise create a unique name //ToDo: SomethingBetter
         }
 
         // Start instantiation
-        fileString += varName+" = new "+CLASS_NAME+"(";
+        fileString += "let "+varName+" = new "+CLASS_NAME+"(";
 
         // Fill out constructor with relevant info
         // Logic: value = elementObject[key] == elementObjects[i][key] == elementsObjects[i][CLASS_PARAM[j]]
         let value = "";
         for (let j = 0; j < CLASS_PARAMS.length; j++) {
 
-            //ToDo: All in quotes? What kind of typing to do...
-            if (CLASS_PARAMS[j].toString().toLowerCase() == "xpath") {
-                value = "\'"+elementObjects[i][CLASS_PARAMS[j]]+"\'"; //encapsulate xPath in quotes (has to be single because xpath uses double internally)
+            //Typing = if null do null, otherwise wrap in quotes as a string
+            if (elementObjects[i][CLASS_PARAMS[j]] === null) {
+                value = null;
             } else {
-                value = elementObjects[i][CLASS_PARAMS[j]];
+                value = "\'" + elementObjects[i][CLASS_PARAMS[j]] + "\'"; //encapsulate in quotes (has to be single because xpath uses double internally)
             }
 
-            if (j == CLASS_PARAMS.length - 1) { //Last item
+            if (j === CLASS_PARAMS.length - 1) { //Last item
                 fileString += value + ");\n\n"; //Finish instantiation
             } else {
                 fileString += value + ", "; //Trailing comma
@@ -370,7 +446,7 @@ function createJSObject(outputFileHeader, elementObjects) {
     let fileString = '';
 
     // Header info
-    fileString += '// Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.';
+    fileString += '// Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.\n';
     fileString += '// Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.';
 
     // Page data
