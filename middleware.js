@@ -314,6 +314,22 @@ function filterElements(elementObjects, filters, initial) {
 }
 
 /**
+ * Helper Function to check and remove abnormally long full HTML from the output.
+ * (Exceptionally long html can adversely affect performance in output files)
+ *
+ * @param element - the element to check
+ * @returns {string} - Either html or filler string.
+ */
+function checkHTMLLength(element) {
+    if (element.fullhtml.length > 2000) {
+        return "Full HTML of element is too long to display.";
+    } else {
+        return element.fullhtml;
+    }
+
+}
+
+/**
  * A helper method for {@link filterElements} that performs the logic of determining if an element should be included in the output.
  * It also assigns the .enumType field in Element for later sorting.
  *
@@ -360,23 +376,20 @@ function isInSelection(element, filters) {
 
 //=================================================== Descriptive Names ===========================================================
 
-//ToDo: Everything below here
-
 /**
- * Generate and set a descriptive name "E.g. Home Button" for each element
+ * Generate and set a descriptive name (e.g. "Home Button") for each element
  * @param elementObjects
  */
 function generateAndSetDescriptiveName(elementObjects) {
     elementObjects.forEach(function(element) {
+
+        // Generate a unique descriptive name
         let name = generateDescriptiveName(element);
 
-        name = checkForUniqueName(elementObjects, name);
+        // Apply the unique name
+        name = applyUniqueName(elementObjects, name);
 
-        // //ToDo - @Peter (Not sure exactly how you want to address this; here's one option)
-        // if (isActuallyDescriptive(name)) {
-        //     element.descriptiveName = true;
-        // }
-
+        // Set the unique name
         element.descriptiveName = name;
     });
 }
@@ -389,14 +402,18 @@ function generateAndSetDescriptiveName(elementObjects) {
  * @returns {*} - the string representing the name to display
  */
 function generateDescriptiveName(element) {
+
+    // If has name => Name + Type
     if (element.name !== null) {
         element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.name) + ' ' + element.doc_element.tagName.toLowerCase())); //Name + Type
 
+    // If has ID => ID + Type
     } else if (element.id !== null) {
         element.hasDescriptiveName = true;
         return capitalizeFirstLetter(camelize(sanitizeDescriptiveName(element.id) + ' ' + element.doc_element.tagName.toLowerCase())); //ID + Type
 
+    // Otherwise do what we can
     } else {
         if (element.doc_element.textContent !== '') {
             let sanitizedName = sanitizeDescriptiveName(element.doc_element.textContent);
@@ -414,18 +431,17 @@ function generateDescriptiveName(element) {
 }
 
 /**
- * Get and return the element's tag name in case that there is no other descriptive name.
+ * Helper method to return the element's tag name in case that there is no other descriptive name.
  *
  * @param element - the element to use
  * @returns {string} - the element's tag name
  */
 function getElemTypeAsDescriptiveName(element) {
-    //TODO: Set flag to include full HTML in output file.
     return element.doc_element.tagName.toLowerCase();
 }
 
 /**
- * TODO: Function to remove anything but letters and numbers from a descriptive name.
+ * Function to remove anything but letters and numbers from a descriptive name.
  * Whitespace on the front and back of the string is trimmed.
  *
  * @param name - String of the unsanitized descriptive name
@@ -483,17 +499,15 @@ function camelize(name) {
 }
 
 /**
- * TODO: Function to check and make any descriptive name unique.
+ * Function to check and make any descriptive name unique.
  *
  * @param elementObjects - The array of elements
  * @param name - The generated descriptive name
  * @returns name - The unique descriptive name
  */
-function checkForUniqueName(elementObjects, name) {
-    //console.log("Checking for unique.");
+function applyUniqueName(elementObjects, name) {
     let frequencyArray = [];
     for (let i = 0; i < elementObjects.length; i++) {
-        //console.log(elementObjects[i].descriptiveName);
         if (elementObjects[i].descriptiveName !== null && elementObjects[i].descriptiveName.startsWith(name)) {
             frequencyArray.push(elementObjects[i].doc_element.descriptiveName);
         }
@@ -509,7 +523,11 @@ function checkForUniqueName(elementObjects, name) {
 //=================================================== Sort + XPath ===========================================================
 
 
-// Sorts Element array based on the ordering of elements in the elementsToBeParsedCheckboxes
+/**
+ * Sorts Element array  based on the ordering of elements in the elementsToBeParsedCheckboxes
+ * @param elementArray - input array
+ * @returns {*} - modified array
+ */
 function sortElementObjects(elementArray) {
     elementArray.sort((a, b) => a.elemEnumType.localeCompare(b.elemEnumType)); //just compare the elemEnumType by alphabetical order
     return elementArray;
@@ -528,6 +546,11 @@ function getElementXPath(element) {
         return getElementTreeXPath(element);
 }
 
+/**
+ * Gets the element's XPath Tree
+ * @param element - the element to take in
+ * @returns {*} - returns String representation of the tree
+ */
 function getElementTreeXPath(element) {
     let paths = [];
 
@@ -554,20 +577,4 @@ function getElementTreeXPath(element) {
     }
 
     return paths.length ? "/" + paths.join("/") : null;
-}
-
-/**
- * Function check and remove abnormally long full HTML from the output.
- * (Long full html can render massive preformace losses in output files)
- *
- * @param element - the element to check
- * @returns {string} - Either html or filler string.
- */
-function checkHTMLLength(element) {
-    if (element.fullhtml.length > 2000) {
-        return "Full HTML of element is too long to display.";
-    } else {
-        return element.fullhtml;
-    }
-
 }
