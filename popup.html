@@ -1,8 +1,7 @@
 <!doctype html>
 
 <!--
-The HTML for the popup box. Note: only external javascript files should linked here.
-We can add css styling and HTML elements.
+The HTML for the popup box.
 -->
 
 <html>
@@ -14,58 +13,70 @@ We can add css styling and HTML elements.
 </head>
 
 <body>
-    <center>
+
+    <!-- Header text -->
+    <div style="text-align: center;">
         <h1> W.A.T.E.R </h1>
         <h4> Page Object Builder for Automated Testing </h4>
-    </center>
+    </div>
+
+    <!-- File types -->
     <h3> File Outputs: </h3>
 
-    <div><input type="checkbox" id="fileoutput_text" class="output_checkbox"> Text (.txt)</div>
-    <div><input type="checkbox" id="fileoutput_xml" class="output_checkbox"> XML (.xml)</div>
-    <div><input type="checkbox" id="fileoutput_selenium" class="output_checkbox"> Selenium (.java)</div>
-    <div><input type="checkbox" id="fileoutput_jasmine" class="output_checkbox"> Javascript Objects (.js)</div><br>
+        <div><input type="checkbox" id="fileoutput_text" class="output_checkbox"> Text (.txt)</div>
+        <div><input type="checkbox" id="fileoutput_xml" class="output_checkbox"> XML (.xml)</div>
+        <div><input type="checkbox" id="fileoutput_selenium" class="output_checkbox"> Selenium (.java)</div>
+        <div><input type="checkbox" id="fileoutput_jasmine" class="output_checkbox"> Javascript Objects (.js)</div><br>
+
     <div id="feedback"> </div>
 
-    <center>
-        <button id="checkPage" style="vertical-align:middle"><span>Get HTML </span></button>
-    </center>
+    <!-- Submit/Action button -->
+    <div style="text-align: center;">
+        <button id="checkPage" style="vertical-align:middle"><span>Get Elements </span></button>
+    </div>
+
+    <!-- Advanced options-->
     <br>
     <button class="accordion">Advanced Options</button>
 
     <div class="panel">
 
+        <!-- Select All/Deselect All buttons-->
         <div id="Selection">
             <br>
-            <center>
+            <div style="text-align: center;">
                 <button id="selectAll">Select All</button>
                 <button id="unselectAll">Unselect All</button>
                 <script type="text/javascript" src="frontend.js"></script>
-            </center>
+            </div>
         </div>
 
-
-
-
+        <!-- Specific element types -->
         <div class="container">
-        <div class="left-col">
-          <h3>HTML:</h3>
-          <input type="checkbox" id="input" class="element_checkbox"> Input <br>
-          <input type="checkbox" id="button" class="element_checkbox"> Button<br>
-          <input type="checkbox" id="link" class="element_checkbox"> Hyperlink<br>
+
+            <!-- Basic HTML -->
+            <div class="left-col">
+              <h3>HTML:</h3>
+              <input type="checkbox" id="input" class="element_checkbox"> Input <br>
+              <input type="checkbox" id="button" class="element_checkbox"> Button<br>
+              <input type="checkbox" id="link" class="element_checkbox"> Hyperlink<br>
+            </div>
+
+            <!-- Angular ng-click -->
+            <div class="center-col">
+              <h3>Angular:</h3>
+              <input type="checkbox" id="ngclick" class="element_checkbox"> ng-click<br>
+            </div>
+
+            <!-- JavaScript on-click -->
+            <div class="right-col">
+              <h3>JavaScript:</h3>
+              <input type="checkbox" id="onclick" class="element_checkbox"> onclick<br>
+            </div>
 
         </div>
 
-        <div class="center-col">
-          <h3>Angular:</h3>
-          <input type="checkbox" id="ngclick" class="element_checkbox"> ng-click<br>
-
-        </div>
-        <div class="right-col">
-          <h3>JavaScript:</h3>
-          <input type="checkbox" id="onclick" class="element_checkbox"> onclick<br>
-
-
-        </div>
+    </div>
 
 </body>
 
