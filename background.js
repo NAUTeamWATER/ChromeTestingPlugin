@@ -138,30 +138,39 @@ function createXMLFile(outputFileHeader, elementObjects) {
 
 //=================================================== Selenium (Java) File ===========================================================
 
-//ToDo: Cleanup everything below here
-
-//TODO: Function to take sorted element object array, parse through, and create a Selenium compatible .java file and download it.
+/**
+ * Function to take sorted element object array, parse through, and create a Selenium compatible .java file and download it.
+ *
+ * Note: Currently commented out code is for general use (i.e. non-Choice Hotels specific).
+ * For Choice version, make sure anything involving webElement, driver, WebDriver, etc. is commented out.
+ * For Consumer version make sure anything involving pagedriver or page is commented out.
+ */
 function createSeleniumFile(outputFileHeader, elementObjects) {
+
+    // Create output string
     let fileString = '';
     fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
 
-	
+	// Helper function for encapsulating xPath in string notation
 	function Xpathcleanup(elementObject,string){
 		string += elementObject.xpath;
 		string = string.replace('"', "'");
 		string = string.replace('"', "'");
 		return string;
 	}
-/*Currently commented out code is for Users that aren't Choice Hotel employees 
-  For choice version, make sure anything involving webElement, driver,WebDriver is  commented out.
-  For consumer version make sure anything involving pagedriver,or page is commented out.
-*/	
-	//adds testing functionality to webElement; 
+
+	// Add testing functionality to webElement
 	function SetupFunctions(fileString, elementObject) {
-		var XpathString = '';
+
+	    // String to hold data
+	    let XpathString = '';
 		XpathString = Xpathcleanup(elementObject,XpathString);
-		if (elementObject.type == 'Button' || elementObject.type == 'JavaScript (on-click)' || elementObject.type == 'Angular (ng-click)'){	
-			if (elementObject.name != null){
+
+		// Clickable elements (Button, on-click, ng-click)
+		if (elementObject.type === 'Button' || elementObject.type === 'JavaScript (on-click)' || elementObject.type === 'Angular (ng-click)'){
+
+		    // Click by name
+		    if (elementObject.name !== null){
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
 				fileString += '        page.clickElementByName("' + elementObject.name  + '");\n' ;
 				/*
@@ -171,7 +180,9 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
-			else if(elementObject.id != null){
+
+			// Click by ID
+			else if(elementObject.id !== null){
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;	
 				fileString += '        page.clickElementById("' + elementObject.id  + '");\n' ;
 				/*
@@ -181,6 +192,8 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
+
+			// Click by XPath
 			else {
 			    fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;	
 				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
@@ -191,9 +204,14 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
+
 		}
-		else if(elementObject.type == 'Link'){				
-			if (elementObject.name != null){
+
+		// Clickable Links (separate due to web element code)
+		else if(elementObject.type === 'Link'){
+
+		    // Click by name
+			if (elementObject.name !== null){
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
 				fileString += '        page.clickElementByName("' + elementObject.name  + '");\n' ;
 				/*
@@ -202,7 +220,9 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 			    fileString += '   }\n';
 			}
-			else if(elementObject.id != null){
+
+			// Click by ID
+			else if(elementObject.id !== null){
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
 				fileString += '        page.clickElementById("' + elementObject.id  + '");\n' ;
 				/*
@@ -211,6 +231,8 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 			    fileString += '   }\n';
 			}
+
+			// Click by XPath
 			else {
 				fileString += '   public void click'+elementObject.descriptiveName + '(){\n' ;
 				fileString += '        page.clickElementByXpath("' + XpathString  + '");\n' ;
@@ -221,9 +243,13 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				fileString += '   }\n';
 			}
 		}
-		else if(elementObject.type == 'Input'){	
-			if (elementObject.name != null){
-			// Getter function
+
+		// Inputs (Get and Set)
+		else if(elementObject.type === 'Input'){
+
+		    // Reference by name
+			if (elementObject.name !== null){
+			    // Getter function
 				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;	
 				fileString += '         page.getFieldValueByName("' + elementObject.name  + '");\n' ;
 				/*
@@ -232,7 +258,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 				
-			// Setter function	
+			    // Setter function
 				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
 				fileString += '         page.typeValueInFieldByName("' + elementObject.name  + '" , value);\n' ;
 				/*
@@ -242,8 +268,10 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
-			else if(elementObject.id != null){
-			// Getter function
+
+			// Reference by ID
+			else if(elementObject.id !== null){
+			    // Getter function
 				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;	
 				fileString += '         page.getFieldValueById("' + elementObject.id  + '");\n' ;
 				/*
@@ -252,7 +280,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 				
-			// Setter function
+			    // Setter function
 				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
 				fileString += '         page.typeValueInFieldById("' + elementObject.id  + '" , value);\n' ;
 				/*
@@ -262,8 +290,10 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
+
+			// Reference by XPath
 			else {
-			// Getter function	
+			    // Getter function
 				fileString += '   public String get'+elementObject.descriptiveName + '(){\n' ;
 				fileString += '         page.getFieldValueByXpath("' + XpathString  + '");\n' ;
 				/*
@@ -272,7 +302,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 				
-			// Setter function	
+			    // Setter function
 				fileString += '   public void set'+elementObject.descriptiveName + '(String value){\n' ;
 				fileString += '         page.typeValueInFieldByXpath("' + XpathString  + '" , value);\n' ;
 				/*
@@ -282,13 +312,20 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 				*/
 				fileString += '   }\n';
 			}
+
 		}
+
+		// Unknown element, return
 		else {
 			return fileString;
 		}
+
+		// Return final string
 		return fileString;
     }
-/// Start of the file Here!!!!
+
+
+    // Start actual file output here
 	fileString += '\n';
 	fileString += 'import org.openqa.selenium.*;';
 	fileString += '\n\n';
@@ -299,7 +336,8 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 	fileString += '			this.page = page;\n';
 	fileString += '	  }\n';
 	//fileString += '   private WebDriver driver = new ChromeDriver();';
-	
+
+    // Populate with data
     for (let i = 0; i < elementObjects.length; i++){
 		if (elementObjects[i].hasDescriptiveName == true){
 			fileString += '/*\n' +elementObjects[i].descriptiveName + '\n*/\n';
@@ -311,14 +349,15 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
 		fileString += '\n\n';
     }
 
-///////// End of commented out code 
+    // Finish strong
 	fileString += '}';
 
+    // Create blob for output format
     const blob = new Blob([fileString], {
         type: 'text/plain'
     });
-    //console.log("Created Blob object.");
 
+    // Return URL to download
     return URL.createObjectURL(blob);
 
 }
