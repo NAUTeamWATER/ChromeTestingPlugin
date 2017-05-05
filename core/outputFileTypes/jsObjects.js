@@ -115,7 +115,7 @@ function instantiateObjects(elementObjects) {
 
 //======= Main JS Function =============
 
-export function createJSObjectsFile(outputFileHeader, elementObjects, headerStringArray) {
+function createJSObjectsFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';

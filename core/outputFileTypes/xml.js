@@ -5,7 +5,7 @@
  * Create an XML file containing the element data.
  * Useful as a generalized, but clearly structured, file type.
  */
-export function createXMLFile(outputFileHeader, elementObjects, headerStringArray) {
+function createXMLFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';

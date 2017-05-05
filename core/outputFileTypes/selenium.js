@@ -7,7 +7,7 @@
  * For Choice version, make sure anything involving webElement, driver, WebDriver, etc. is commented out.
  * For Consumer version make sure anything involving pagedriver or page is commented out.
  */
-export function createSeleniumFile(outputFileHeader, elementObjects, headerStringArray) {
+function createSeleniumFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create output string
     let fileString = '';

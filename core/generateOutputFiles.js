@@ -3,13 +3,6 @@
  * from the frontend UI), and creates the file outputs it should, formatting them as required.
  */
 
-
-//Imports
-import { createTextFile } from 'outputFileTypes/text';
-import { createXMLFile } from 'outputFileTypes/xml';
-import { createSeleniumFile } from 'outputFileTypes/selenium';
-import { createJSObjectsFile } from 'outputFileTypes/jsObjects';
-
 // Variables used to hold the most important pieces of data
 let outputFileHeader = []; //Info from the page parsed for the header of the output file
 let outputFileCheckboxes = []; //The file types selected in the UI

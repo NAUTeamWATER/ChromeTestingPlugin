@@ -26,8 +26,15 @@
     ],
 
   "background": {
-   "scripts": ["core/generateOutputFiles.js"],
-   "persistent": false
+    "scripts": [
+      "core/outputFileTypes/text.js",
+      "core/outputFileTypes/xml.js",
+      "core/outputFileTypes/selenium.js",
+      "core/outputFileTypes/jsObjects.js",
+      "core/generateOutputFiles.js"
+    ],
+
+    "persistent": false
   },
 
   "permissions": [

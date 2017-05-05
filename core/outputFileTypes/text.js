@@ -5,7 +5,7 @@
  * Create a text file containing the element data.
  * Initially created primarily for internal testing purposes, but it can be used for whatever is desired.
  */
-export function createTextFile(outputFileHeader, elementObjects, headerStringArray) {
+function createTextFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';
