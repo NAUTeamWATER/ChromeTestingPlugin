@@ -5,7 +5,7 @@ var bkg = chrome.extension.getBackgroundPage();
 //Call the script that runs on the current tab environment.
 
 // Get the button into a variable for ease of access
-let checkPageButton = document.getElementById('checkPage');
+var checkPageButton = document.getElementById('checkPage');
 
 /**
  * Add an event listener for clicking the button
