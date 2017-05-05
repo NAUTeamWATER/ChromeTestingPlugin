@@ -115,14 +115,14 @@ function instantiateObjects(elementObjects) {
 
 //======= Main JS Function =============
 
-function createJSObject(outputFileHeader, elementObjects) {
+export function createJSObjectsFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';
 
     // Header info
-    fileString += '// Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.\n';
-    fileString += '// Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.';
+    fileString += '//'+headerStringArray[0];
+    fileString += '//'+headerStringArray[1]+"\n";
 
     // Page data
     fileString += createClass(elementObjects);
@@ -134,6 +134,6 @@ function createJSObject(outputFileHeader, elementObjects) {
         type: 'text/plain'
     });
 
-    // Return the URL of the blob so that it can be downloaded
-    return URL.createObjectURL(blob);
+    // Return the  blob so that it can be downloaded
+    return blob;
 }

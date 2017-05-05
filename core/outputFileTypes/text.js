@@ -5,12 +5,12 @@
  * Create a text file containing the element data.
  * Initially created primarily for internal testing purposes, but it can be used for whatever is desired.
  */
-function createTextFile(outputFileHeader, elementObjects) {
+export function createTextFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';
-    fileString += 'Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp;
-    fileString += '\n Retrieved '+ elementObjects.length + ' total elements from ' + elementsToBeParsedCheckboxes.length +' categories.'; //ToDo: x out of y selected categories
+    fileString += headerStringArray[0];
+    fileString += headerStringArray[1];
     fileString += "\n";
 
     // Function to add elements to file
@@ -30,7 +30,7 @@ function createTextFile(outputFileHeader, elementObjects) {
         type: 'text/plain'
     });
 
-    // Return the URL of the blob so that it can be downloaded
-    return URL.createObjectURL(blob);
+    // Return the blob
+    return blob;
 
 }

@@ -5,15 +5,15 @@
  * Create an XML file containing the element data.
  * Useful as a generalized, but clearly structured, file type.
  */
-function createXMLFile(outputFileHeader, elementObjects) {
+export function createXMLFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create a string to hold the data in the file
     let fileString = '';
 
     // Header information
     fileString += '<?xml version="1.0" encoding="UTF-8"?>\n';
-    fileString += '<!--Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '.-->';
-    fileString += '<!-- Retrieved ' + elementObjects.length + ' elements from ' + elementsToBeParsedCheckboxes.length +' categories.-->';
+    fileString += '<!--' + headerStringArray[0] + '-->';
+    fileString += '<!--' + headerStringArray[1] + '-->';
 
     // Page data
     fileString += '<output>\n';
@@ -45,6 +45,6 @@ function createXMLFile(outputFileHeader, elementObjects) {
         type: 'text/plain'
     });
 
-    // Return the URL of the blob so that it can be downloaded
-    return URL.createObjectURL(blob);
+    // Return the blob so that it can be downloaded
+    return blob;
 }

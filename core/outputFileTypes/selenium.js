@@ -7,11 +7,12 @@
  * For Choice version, make sure anything involving webElement, driver, WebDriver, etc. is commented out.
  * For Consumer version make sure anything involving pagedriver or page is commented out.
  */
-function createSeleniumFile(outputFileHeader, elementObjects) {
+export function createSeleniumFile(outputFileHeader, elementObjects, headerStringArray) {
 
     // Create output string
     let fileString = '';
-    fileString += '/*Webpage elements retrieved from: ' + outputFileHeader[0].pageURL + ' at ' + outputFileHeader[0].timeStamp + '*/';
+    fileString += '/*'+ headerStringArray[0];
+    fileString += headerStringArray[1] +'*/';
 
 	// Helper function for encapsulating xPath in string notation
 	function Xpathcleanup(elementObject,string){
@@ -219,7 +220,7 @@ function createSeleniumFile(outputFileHeader, elementObjects) {
         type: 'text/plain'
     });
 
-    // Return URL to download
-    return URL.createObjectURL(blob);
+    // Return blob to download
+    return blob;
 
 }
