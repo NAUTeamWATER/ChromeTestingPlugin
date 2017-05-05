@@ -20,13 +20,13 @@
             "http://*/*",
             "https://*/*"
             ],
-        "js": ["parseContent.js"],
+        "js": ["core/parseContent.js"],
         "run_at": "document_end"
         }
     ],
 
   "background": {
-   "scripts": ["generateOutputFiles.js"],
+   "scripts": ["core/generateOutputFiles.js"],
    "persistent": false
   },
 
