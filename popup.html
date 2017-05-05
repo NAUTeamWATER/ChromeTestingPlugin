@@ -8,7 +8,7 @@ The HTML for the popup box.
 
 <head>
     <title>Capstone test</title>
-    <script src="frontend.js"></script>
+    <script src="popup.js"></script>
     <link rel="stylesheet" href="popup.css">
 </head>
 
@@ -23,7 +23,7 @@ The HTML for the popup box.
     <!-- File types -->
     <h3> File Outputs: </h3>
 
-        <div><input type="checkbox" id="fileoutput_text" class="output_checkbox"> Text (.txt)</div>
+        <div><input type="checkbox" id="fileoutput_text" checked class="output_checkbox"> Text (.txt)</div> <!-- ToDo: Remove checked when done testing -->
         <div><input type="checkbox" id="fileoutput_xml" class="output_checkbox"> XML (.xml)</div>
         <div><input type="checkbox" id="fileoutput_selenium" class="output_checkbox"> Selenium (.java)</div>
         <div><input type="checkbox" id="fileoutput_jasmine" class="output_checkbox"> Javascript Objects (.js)</div><br>
@@ -47,7 +47,7 @@ The HTML for the popup box.
             <div style="text-align: center;">
                 <button id="selectAll">Select All</button>
                 <button id="unselectAll">Unselect All</button>
-                <script type="text/javascript" src="frontend.js"></script>
+                <script type="text/javascript" src="popup.js"></script>
             </div>
         </div>
 
